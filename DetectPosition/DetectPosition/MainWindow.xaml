@@ -1,0 +1,77 @@
+﻿<Window x:Class="DetectPosition.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DetectPosition"
+        mc:Ignorable="d" Top="0" Left="0" 
+        Title="MainWindow" Height="1080" Width="1920">
+    <Grid Background="Black" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="75" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="75" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="75" />
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Row="1" Grid.Column="0" Margin="5" 
+               Source="{Binding SourceImage}" />
+
+        <Image Grid.Row="2" Grid.Column="0" Margin="5" 
+               Source="{Binding MasterImage}" />
+
+        <Image Grid.Row="1" Grid.Column="1" Margin="5" 
+               Source="{Binding Result1Image}" />
+        
+        <Image Grid.Row="1" Grid.Column="2" Margin="5" 
+               Source="{Binding Result2Image}" />
+
+        <Image Grid.Row="1" Grid.Column="3" Margin="5" 
+               Source="{Binding Result3Image}" />
+
+        <Image Grid.Row="2" Grid.Column="1" Margin="5" 
+               Source="{Binding Result4Image}" />
+
+        <Image Grid.Row="2" Grid.Column="2" Margin="5" 
+               Source="{Binding Result5Image}" />
+
+        <Image Grid.Row="2" Grid.Column="3" Margin="5" 
+               Source="{Binding Result6Image}" />
+
+        <StackPanel Grid.Row="0" Grid.Column="0" 
+                    Grid.ColumnSpan="2" 
+                    Orientation="Horizontal" >
+            <Button Content="Open" MinWidth="50" MinHeight="50" 
+                    Click="ImageOpenClick" Margin="5" />
+
+            <Button Content="Master Open" MinWidth="50" MinHeight="50" 
+                    Click="MasterImageOpenClick" Margin="5" />
+
+            <Button Content="Master - Source" MinWidth="50" MinHeight="50" 
+                    Click="DiffMasterSourceClick" Margin="5" />
+
+            <Button Content="Median" MinWidth="50" MinHeight="50" 
+                    Click="ApplyMedianlick" Margin="5" />
+
+            <Button Content="Bitwise" MinWidth="50" MinHeight="50" 
+                    Click="ApplyBitwiseClick" Margin="5" />
+
+            <Button Content="MSER" MinWidth="50" MinHeight="50" 
+                    Click="ApplyMSERClick" Margin="5" />
+
+            <Button Content="Arithmatic Quantization" MinWidth="50" MinHeight="50" 
+                    Click="ApplyQuantizationArithmatic" Margin="5" />
+
+            <Button Content="Guided Filter" MinWidth="50" MinHeight="50" 
+                    Click="ApplyGuidedFilter" Margin="5" />
+        </StackPanel>
+    </Grid>
+</Window>
