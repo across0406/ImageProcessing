@@ -72,6 +72,9 @@
 
             <Button Content="Guided Filter" MinWidth="50" MinHeight="50" 
                     Click="ApplyGuidedFilter" Margin="5" />
+
+            <Button Content="Cubic Spline" MinWidth="50" MinHeight="50" 
+                    Click="ApplyCubicSpline" Margin="5" />
         </StackPanel>
     </Grid>
 </Window>

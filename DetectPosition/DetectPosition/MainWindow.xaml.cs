@@ -73,6 +73,11 @@ namespace DetectPosition
             ViewModel?.ApplySubtractMasterSource?.Invoke();
         }
 
+        private void ApplyCubicSpline( object sender, RoutedEventArgs e )
+        {
+            ViewModel?.ApplyCubicSpline?.Invoke();
+        }
+
         #endregion Private Methods
 
         #region Constructors

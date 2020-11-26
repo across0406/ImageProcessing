@@ -337,22 +337,17 @@ namespace DetectPosition
             {
                 var blurred = new cv.Mat();
                 var filtered = new cv.Mat();
-                var xor = new cv.Mat();
+                var subtracted = new cv.Mat();
 
-                cv.Cv2.MedianBlur( SourceMat, blurred, 33 );
+                cv.Cv2.Subtract( MasterMat, SourceMat, subtracted );
 
-                var filter = cv.XImgProc.GuidedFilter.Create( blurred, 21, 0.09 );
-                filter.Filter( blurred, filtered );
-
-                cv.Cv2.BitwiseXor( filtered, blurred, xor );
-
-                DestinationMat = blurred.Clone();
+                var filter = cv.XImgProc.GuidedFilter.Create( subtracted, 21, 0.09 );
+                filter.Filter( SourceMat, filtered );
 
                 Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                 {
-                    DestinationImage = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
-                    Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( filtered.Clone() );
-                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( xor.Clone() );
+                    Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( subtracted.Clone() );
+                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( filtered.Clone() );
                 } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
             }
             catch ( Exception ex )
@@ -365,17 +360,60 @@ namespace DetectPosition
         {
             try
             {
-                var blurred = new cv.Mat();
+                var subtracted = new cv.Mat();
+                var splined = new cv.Mat();
+                byte[] byteData = null;
+                float[] floatData = null;
+                float[][] reformat = null;
+                float[] interpolated = null;
+                float[] floatResult = null;
+                byte[] byteResult = null;
 
-                cv.Cv2.MedianBlur( SourceMat, blurred, 33 );
+                cv.Cv2.Subtract( MasterMat, SourceMat, subtracted );
 
+                byteData = new byte[ SourceMat.Width * SourceMat.Height ];
+                floatData = new float[ SourceMat.Width * SourceMat.Height ];
+                Marshal.Copy( SourceMat.Data, byteData, 0, SourceMat.Width * SourceMat.Height );
 
+                Parallel.For( 0, SourceMat.Width * SourceMat.Height, i =>
+                {
+                    floatData[ i ] = (float)byteData[ i ];
+                } );
 
-                DestinationMat = blurred.Clone();
+                reformat = new float[ SourceMat.Width * SourceMat.Height ][];
+                interpolated = new float[ SourceMat.Width * SourceMat.Height ];
+                floatResult = new float[ SourceMat.Width * SourceMat.Height ];
+                byteResult = new byte[ SourceMat.Width * SourceMat.Height ];
+
+                Parallel.For( 0, SourceMat.Height, i =>
+                {
+                    for ( int j = 0; j < SourceMat.Width; ++j )
+                    {
+                        reformat[ i * SourceMat.Width + j ] = new float[ 3 ];
+                        reformat[ i * SourceMat.Width + j ][ 0 ] = j;
+                        reformat[ i * SourceMat.Width + j ][ 1 ] = i;
+                        reformat[ i * SourceMat.Width + j ][ 2 ] = (float)byteData[ i * SourceMat.Width + j ];
+                    }
+                } );
+
+                CubicSpline.Spline3D spline = new CubicSpline.Spline3D( reformat );
+
+                Parallel.For( 0, SourceMat.Height * SourceMat.Width, i =>
+                {
+                    float[] vec3 = spline.GetPositionAt( i );
+                    interpolated[ i ] = vec3[ 2 ];
+                    byteResult[ i ] = (byte)interpolated[ i ];
+                } );
+
+                splined = cv.Mat.Zeros( SourceMat.Height, SourceMat.Width, MatType.CV_8UC1 ).ToMat();
+
+                Marshal.Copy( byteResult, 0, splined.Data, SourceMat.Height * SourceMat.Width );
+
+                DestinationMat = splined.Clone();
 
                 Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                 {
-                    DestinationImage = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
+                    Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
                 } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
             }
             catch ( Exception ex )
@@ -412,6 +450,7 @@ namespace DetectPosition
             ApplyQuantizationArithmatic += new Action( InnerApplyQuantizationArithmatic );
             ApplyGuidedFilter += new Action( InnerApplyGuidedFilter );
             ApplySubtractMasterSource += new Action( InnerApplySubtractMasterSource );
+            ApplyCubicSpline += new Action( InnerApplyCubicSpline );
         }
 
         #endregion Constructors
@@ -603,6 +642,12 @@ namespace DetectPosition
         }
 
         public Action ApplySubtractMasterSource
+        {
+            get;
+            set;
+        }
+
+        public Action ApplyCubicSpline
         {
             get;
             set;
