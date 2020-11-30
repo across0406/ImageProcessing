@@ -78,6 +78,11 @@ namespace DetectPosition
             ViewModel?.ApplyCubicSpline?.Invoke();
         }
 
+        private void OnSourceImageMouseRightButtonDown( object sender, MouseButtonEventArgs e )
+        {
+            ViewModel?.SaveSourceImage?.Invoke();
+        }
+
         #endregion Private Methods
 
         #region Constructors
@@ -103,5 +108,7 @@ namespace DetectPosition
         }
 
         #endregion Public Properties
+
+        
     }
 }

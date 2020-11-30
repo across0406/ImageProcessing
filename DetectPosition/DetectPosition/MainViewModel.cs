@@ -422,6 +422,19 @@ namespace DetectPosition
             }
         }
 
+        private void InnerSaveSourceImage()
+        {
+            if ( SourceImage == null )
+            {
+
+            }
+            else
+            {
+                var sourceMat = cv.WpfExtensions.WriteableBitmapConverter.ToMat( SourceImage );
+                sourceMat.ImWrite( "SourceImage.png" );
+            }
+        }
+
         #endregion Private Methods
 
         #region Constructors
@@ -451,6 +464,8 @@ namespace DetectPosition
             ApplyGuidedFilter += new Action( InnerApplyGuidedFilter );
             ApplySubtractMasterSource += new Action( InnerApplySubtractMasterSource );
             ApplyCubicSpline += new Action( InnerApplyCubicSpline );
+
+            SaveSourceImage += new Action( InnerSaveSourceImage );
         }
 
         #endregion Constructors
@@ -648,6 +663,12 @@ namespace DetectPosition
         }
 
         public Action ApplyCubicSpline
+        {
+            get;
+            set;
+        }
+
+        public Action SaveSourceImage
         {
             get;
             set;
