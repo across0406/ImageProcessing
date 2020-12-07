@@ -1,0 +1,515 @@
+﻿<UserControl x:Class="SciChartWrapper.Surface" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ext="http://schemas.abtsoftware.co.uk/scichart/exampleExternals" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:s="http://schemas.abtsoftware.co.uk/scichart" 
+             xmlns:s3D="http://schemas.abtsoftware.co.uk/scichart3D" 
+             xmlns:t3D="clr-namespace:SciChart.Charting3D.Modifiers.Tooltip3D;assembly=SciChart.Charting3D"
+             xmlns:local="clr-namespace:SciChartWrapper"
+             xmlns:chartData="clr-namespace:SciChart.Charting3D.Model.ChartData;assembly=SciChart.Charting3D"
+             d:DesignHeight="1000" d:DesignWidth="1000" mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <s3D:Vector3StringConverter StringFormat="n1" x:Key="Vector3StringConverter"/>
+        <s3D:Vector3ComponentConverter x:Key="Vec3Converter"/>
+        <s3D:GradientColorPalette x:Key="HeightColorMap" ContourColor="Black" ContourStrokeThickness="2.0">
+            <s3D:GradientColorPalette.GradientStops>
+                <GradientStop Offset="1" Color="#FF0DD1"/>
+                <GradientStop Offset="0.95" Color="#E80C50"/>
+                <GradientStop Offset="0.9" Color="#FF0E00"/>
+                <GradientStop Offset="0.85" Color="#E8380C"/>
+                <GradientStop Offset="0.8" Color="#FF610D"/>
+                <GradientStop Offset="0.75" Color="#FF7D0D"/>
+                <GradientStop Offset="0.7" Color="#E8900C"/>
+                <GradientStop Offset="0.65" Color="#FFB300"/>
+                <GradientStop Offset="0.6" Color="#E8BD0C"/>
+                <GradientStop Offset="0.55" Color="#FFE80D"/>
+                <GradientStop Offset="0.5" Color="#C5FF0D"/>
+                <GradientStop Offset="0.45" Color="#67E80C"/>
+                <GradientStop Offset="0.4" Color="#10FF00"/>
+                <GradientStop Offset="0.35" Color="#0CE83F"/>
+                <GradientStop Offset="0.3" Color="#0DFF89"/>
+                <GradientStop Offset="0.25" Color="#09C2FF"/>
+                <GradientStop Offset="0.2" Color="#0876E8"/>
+                <GradientStop Offset="0.15" Color="#033CFF"/>
+                <GradientStop Offset="0.1" Color="#1108E8"/>
+                <GradientStop Offset="0.0" Color="#5609FF"/>
+            </s3D:GradientColorPalette.GradientStops>
+        </s3D:GradientColorPalette>
+
+        <s3D:Camera3D x:Key="OrthogonalCamera" CameraId="Ortho Camera"  OrthoWidth="600" OrthoHeight="400" ZoomToFitOnAttach="True" ProjectionMode="Orthogonal" Target="0,0,0" Position="-1000,1000,-1000"/>
+        <s3D:Camera3D x:Key="PerspectiveCamera" CameraId="Perspective Camera" ZoomToFitOnAttach="True" OrbitalYaw="45" OrbitalPitch="30"/>
+        <Style x:Key="TooltipStyle" TargetType="s:TooltipControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="s:TooltipControl">
+                        <Border Background="#ff6495ed" BorderBrush="#ff4d81dd" 
+                                BorderThickness="2" Opacity="0.9" Padding="5">
+                            <ContentPresenter Content="{TemplateBinding DataContext}" 
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="surfaceSeriesTooltipTemplate" DataType="chartData:BaseXyzSeriesInfo3D">
+            <StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock>
+                        <Run FontWeight="Bold" Text="X: "/>
+                        <Run Text="{Binding HitVertex, Converter={StaticResource Vec3Converter}, ConverterParameter='Z'}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run FontWeight="Bold" Text="Y: "/>
+                        <Run Text="{Binding HitVertex, Converter={StaticResource Vec3Converter}, ConverterParameter='X'}"/>
+                    </TextBlock>
+                    <TextBlock>
+                        <Run FontWeight="Bold" Text="Z: "/>
+                        <Run Text="{Binding HitVertex, Converter={StaticResource Vec3Converter}, ConverterParameter='Y'}"/>
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Background="#001C1C1E">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <Button x:Name="uiZoomInBtn" Grid.Row="0" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_zoomin.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_zoomin_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_zoomin_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="Zoom In"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiZoomOutBtn" Grid.Row="1" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_zoomout.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_zoomout_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_zoomout_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="Zoom Out"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiZoomFitBtn" Grid.Row="2" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_fit.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_fit_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_fit_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="Zoom Fit"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiTopViewBtn" Grid.Row="3" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_top.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_top_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_top_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="Top View"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiROIBtn" Grid.Row="4" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_roi.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_roi_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_roi_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="ROI"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiLineBtn" Grid.Row="5" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_crossline.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_crossline_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_crossline_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="ROI Line"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiClearBtn" Grid.Row="6" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_clear.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_clear_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_clear_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="ROI Delete"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiHColorBtn" Grid.Row="7" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_hcolor.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_hcolor_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_hcolor_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="Height Color"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiRulerBtn" Grid.Row="8" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_ruler.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_ruler_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_ruler_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="Ruler"/>
+                </Button.ToolTip>
+            </Button>
+            <Button x:Name="uiSetBtn" Grid.Row="10" Margin="1" Click="Button_Click" >
+                <Button.Template>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Image x:Name="image"
+								Source="hmlib_icons/viewer_set.png"
+								Stretch="None"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_set_c.png" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Cursor" Value="" />
+                                <Setter TargetName="image" Property="Source" 
+                                        Value="hmlib_icons/viewer_ruler_c.png" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.ToolTip>
+                    <ToolTip Content="Setting"/>
+                </Button.ToolTip>
+            </Button>
+        </Grid>
+
+        <!--  The SciChart3DInteractionToolbar adds rotate, orbit, zoom, pan, zoom extents functionality  -->
+        <!--  to the chart and is included for example purposes.  -->
+        <!--  If you wish to know how to zoom and pan a 3D chart then do a search for Zoom Pan in the Examples suite!  -->
+
+        <s3D:SciChart3DSurface x:Name="sciChart" Grid.Column="0" BorderThickness="0" WorldDimensions="1000,1000,1000" 
+                               Background="Transparent" MouseRightButtonDown="SurfaceMouseUp" Camera="{StaticResource OrthogonalCamera}">
+            <s3D:SciChart3DSurface.RenderableSeries>
+                <s3D:SurfaceMeshRenderableSeries3D x:Name="backgroundSurfaceMesh"/>
+                <s3D:SurfaceMeshRenderableSeries3D x:Name="surfaceMeshRenderableSeries" 
+                                                   DrawMeshAs="SolidMesh" 
+                                                   DrawSkirt="False" 
+                                                   DataSeries="{Binding MeshDataSeries}"
+                                                   MeshColorPalette="{StaticResource HeightColorMap}"
+                                                   t3D:TooltipModifier3D.TooltipContainerStyle="{StaticResource TooltipStyle}"
+                                                   t3D:TooltipModifier3D.TooltipTemplate="{StaticResource surfaceSeriesTooltipTemplate}"/>
+                <s3D:ScatterRenderableSeries3D x:Name="scatterRenderableSeries"/>
+            </s3D:SciChart3DSurface.RenderableSeries>
+
+            <s3D:SciChart3DSurface.XAxis>
+                <s3D:NumericAxis3D x:Name="XAx3D" FontSize="10"
+                                   AxisTitle="X" 
+                                   TextFormatting="n2" 
+                                   AutoRange="Always" 
+                                   VisibleRange="{Binding XAxisRange}"/>
+            </s3D:SciChart3DSurface.XAxis>
+
+            <s3D:SciChart3DSurface.YAxis>
+                <s3D:NumericAxis3D x:Name="YAx3D" FontSize="10"
+                                   AxisTitle="Z" 
+                                   TextFormatting="n2" 
+                                   AutoRange="Never" 
+                                   VisibleRange="{Binding YAxisRange}"/>
+            </s3D:SciChart3DSurface.YAxis>
+
+            <s3D:SciChart3DSurface.ZAxis>
+                <s3D:NumericAxis3D x:Name="ZAx3D" FontSize="10"
+                                   AxisTitle="Y" 
+                                   TextFormatting="n2" 
+                                   AutoRange="Always" 
+                                   VisibleRange="{Binding ZAxisRange}"/>
+            </s3D:SciChart3DSurface.ZAxis>
+
+            <s3D:SciChart3DSurface.ChartModifier>
+                <s3D:ModifierGroup3D>
+                    <s3D:OrbitModifier3D ExecuteOn="MouseLeftButton" />
+                    <s3D:VertexSelectionModifier3D ExecuteOn="MouseRightButton" ExecuteWhen="Ctrl"/>
+                    <s3D:FreeLookModifier3D MovementSpeed="100"
+                                    ForwardKey="W" BackKey="S" RightKey="D" LeftKey="A"
+                                    UpKey="E" DownKey="C"
+                                    IsEnabled="False"/>
+                    <s3D:MouseWheelZoomModifier3D/>
+                    <s3D:TooltipModifier3D Name="tooltip" />
+                    <s3D:ZoomExtentsModifier3D ResetPosition="-1000,500,1000" ResetTarget="0,100,0"  AnimateDurationMs="500"/>
+                </s3D:ModifierGroup3D>
+            </s3D:SciChart3DSurface.ChartModifier>
+        </s3D:SciChart3DSurface>
+
+        <Border Background="#555" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" 
+                BorderThickness="1" BorderBrush="White" CornerRadius="2" Opacity="0.4"
+                MinWidth="300">
+            <Grid TextElement.Foreground="#FFF" >
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Margin" Value="3,5"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Bound Camera" FontWeight="Bold"/>
+
+                <Border Background="#FFF" Height="1" Grid.Row="1" Margin="3,5" Grid.ColumnSpan="2"/>
+
+                <TextBlock Text="Position:" Grid.Row="2" FontWeight="Bold"/>
+
+                <TextBlock Text="Target:" Grid.Row="3" FontWeight="Bold"/>
+
+                <TextBlock Text="Pitch:" Grid.Row="4" FontWeight="Bold"/>
+
+                <TextBlock Text="Yaw:" Grid.Row="5" FontWeight="Bold"/>
+
+                <TextBlock Text="Radius:" Grid.Row="6" FontWeight="Bold"/>
+
+                <TextBlock Text="Projection Mode:" Grid.Row="7" FontWeight="Bold"/>
+
+                <TextBlock Text="Field Of View:" Grid.Row="8" FontWeight="Bold"/>
+
+                <TextBlock Text="Orthographic:" Grid.Row="9" FontWeight="Bold"/>
+
+                <TextBlock Grid.Row="0" Grid.Column="1">
+                    <Run Text="'"/><Run Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.CameraId, FallbackValue='NA'}"/><Run Text="'"/>
+                </TextBlock>
+
+                <TextBlock Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.Position, FallbackValue='NA', Converter={StaticResource Vector3StringConverter}}" Grid.Row="2" Grid.Column="1"/>
+
+                <TextBlock Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.Target, FallbackValue='NA', Converter={StaticResource Vector3StringConverter}}" Grid.Row="3" Grid.Column="1"/>
+
+                <TextBlock Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.OrbitalPitch, FallbackValue='NA'}" Grid.Row="4" Grid.Column="1"/>
+
+                <TextBlock Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.OrbitalYaw, FallbackValue='NA'}" Grid.Row="5" Grid.Column="1"/>
+
+                <TextBlock Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.Radius, FallbackValue='NA'}" Grid.Row="6" Grid.Column="1"/>
+
+                <TextBlock Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.ProjectionMode, FallbackValue='NA'}" Grid.Row="7" Grid.Column="1"/>
+
+                <TextBlock Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.FieldOfView, FallbackValue='NA'}" Grid.Row="8" Grid.Column="1"/>
+
+                <TextBlock Grid.Row="9" Grid.Column="1">
+                    <Run Text="Width="/>
+                    <Run Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.OrthoWidth, FallbackValue='NA'}"/>
+                    <Run Text=", Height="/>
+                    <Run Text="{Binding Source={x:Reference Name=sciChart}, Path=Camera.OrthoHeight, FallbackValue='NA'}"/>
+                </TextBlock>
+            </Grid>
+        </Border>
+
+        <s:HeatmapColorMap  Grid.Row="1" Grid.Column="0"
+                            Height="200"
+                            Margin="15"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Background="{Binding ElementName=sciChart,
+                                                 Path=Background}"
+                            BorderBrush="#777"
+                            BorderThickness="1"
+                            Foreground="{Binding ElementName=sciChart,
+                                                 Path=Foreground}"
+                            Maximum="{Binding ElementName=surfaceMeshRenderableSeries,
+                                              Path=Maximum}"
+                            Minimum="{Binding ElementName=surfaceMeshRenderableSeries,
+                                              Path=Minimum}"
+                            Opacity="0.8"
+                            Orientation="Vertical"
+                            TextFormatting="0.00">
+            <s:HeatmapColorMap.ColorMap>
+                <LinearGradientBrush>
+                    <GradientStop Offset="1" Color="#FF0DD1"/>
+                    <GradientStop Offset="0.95" Color="#E80C50"/>
+                    <GradientStop Offset="0.9" Color="#FF0E00"/>
+                    <GradientStop Offset="0.85" Color="#E8380C"/>
+                    <GradientStop Offset="0.8" Color="#FF610D"/>
+                    <GradientStop Offset="0.75" Color="#FF7D0D"/>
+                    <GradientStop Offset="0.7" Color="#E8900C"/>
+                    <GradientStop Offset="0.65" Color="#FFB300"/>
+                    <GradientStop Offset="0.6" Color="#E8BD0C"/>
+                    <GradientStop Offset="0.55" Color="#FFE80D"/>
+                    <GradientStop Offset="0.5" Color="#C5FF0D"/>
+                    <GradientStop Offset="0.45" Color="#67E80C"/>
+                    <GradientStop Offset="0.4" Color="#10FF00"/>
+                    <GradientStop Offset="0.35" Color="#0CE83F"/>
+                    <GradientStop Offset="0.3" Color="#0DFF89"/>
+                    <GradientStop Offset="0.25" Color="#09C2FF"/>
+                    <GradientStop Offset="0.2" Color="#0876E8"/>
+                    <GradientStop Offset="0.15" Color="#033CFF"/>
+                    <GradientStop Offset="0.1" Color="#1108E8"/>
+                    <GradientStop Offset="0.0" Color="#5609FF"/>
+                </LinearGradientBrush>
+            </s:HeatmapColorMap.ColorMap>
+        </s:HeatmapColorMap>
+    </Grid>
+</UserControl>

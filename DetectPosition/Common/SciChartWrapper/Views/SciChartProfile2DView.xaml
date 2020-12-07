@@ -1,0 +1,291 @@
+﻿<UserControl x:Class="SciChartWrapper.Views.SciChartProfile2DView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:viewModel="clr-namespace:SciChartWrapper.ViewModels"
+             xmlns:s="http://schemas.abtsoftware.co.uk/scichart"
+             xmlns:interactivity="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:interactinos="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:view="clr-namespace:SciChartWrapper.Views"
+             d:DesignHeight="184" d:DesignWidth="820">
+    <UserControl.Resources>
+        <!--color-->
+        <SolidColorBrush x:Key="FontColor" Color="#FFF0EBD0" />
+        <SolidColorBrush x:Key="BrushColor" Color="#FF737579" />
+        <SolidColorBrush x:Key="HMWhite" Color="#FFC8C8C8" />
+        <SolidColorBrush x:Key="Trasparente" Color="#00000000" />
+        <SolidColorBrush x:Key="DefBackColor" Color="#FF2C2E32" />
+        <SolidColorBrush x:Key="MsgBackColor" Color="#FF6F778A" />
+        <SolidColorBrush x:Key="AutoRunColor" Color="#FF003300" />
+        <SolidColorBrush x:Key="WarringColor" Color="#FFFFFF66" />
+        <SolidColorBrush x:Key="SelectColor" Color="#FF2C2E32" />
+        <SolidColorBrush x:Key="NotSelectColor" Color="#FF606268"/>
+        <SolidColorBrush x:Key="Selected" Color="#FFEEAF06"/>
+        <SolidColorBrush x:Key="MouseOver" Color="#80FFA500"/>
+
+        <SolidColorBrush x:Key="RunColor" Color="#003300"/>
+        <SolidColorBrush x:Key="StopColor" Color="#F2F2F2"/>
+        <SolidColorBrush x:Key="GoodColor" Color="#FF00F200" />
+        <SolidColorBrush x:Key="DefectColor" Color="#FFCC0000" />
+        <SolidColorBrush x:Key="CriticalErrorColor" Color="#CC0000"/>
+        <SolidColorBrush x:Key="ErrorColor" Color="#FFFF66"/>
+
+        <SolidColorBrush x:Key="MenuColor" Color="#FF37393f" />
+        <SolidColorBrush x:Key="TitleBarColor" Color="#FF2C2E32"/>
+        <SolidColorBrush x:Key="HMBlack" Color="#FF000000" />
+        <SolidColorBrush x:Key="MenuColorBright" Color="#FF606268"/>
+        <SolidColorBrush x:Key="LineColorGray" Color="#FF2C3037"/>
+        <SolidColorBrush x:Key="LineSeparator" Color="#FF2C3037" />
+        <SolidColorBrush x:Key="LineColorDark" Color="#FF222528" />
+        <SolidColorBrush x:Key="LineColorBright" Color="#FF545557"/>
+
+        <SolidColorBrush x:Key="ScrollRepeatBtn" Color="#FF4E5158"/>
+        <SolidColorBrush x:Key="ScrollBackColor" Color="#FF616267"/>
+
+        <SolidColorBrush x:Key="TextColor" Color="#969799"/>
+        <SolidColorBrush x:Key="TextColorBright" Color="#FFAFB0B2"/>
+        <SolidColorBrush x:Key="TextColorYellow" Color="#FFFABA0C"/>
+
+        <Color x:Key="ControlPressedColor">#FF211AA9</Color>
+        <Color x:Key="DisabledForegroundColor">#FF888888</Color>
+        <Color x:Key="ScrollArrowColor">#FF8D9095</Color>
+
+        <Color x:Key="ComboBack">#FF37393f</Color>
+        <Color x:Key="ComboBackSelect">#FF606268</Color>
+        <Color x:Key="ComboBotton">#FFAFB0B2</Color>
+
+        <!--TextBlock-->
+        <Style x:Key="HMTextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="Tahoma" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource FontColor}" />
+        </Style>
+
+
+        <!--Simple Label-->
+        <Style x:Key="HMSimpleLabel" TargetType="{x:Type Label}">
+            <Setter Property="FontFamily" Value="Tahoma" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Background" Value="#37393F"/>
+            <Setter Property="BorderBrush" Value="{StaticResource HMWhite}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Foreground" Value="#737579"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="16,3,16,3"/>
+        </Style>
+
+        <Style x:Key="SciChartSurfaceStyle" TargetType="s:SciChartSurface">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Silver"/>
+        </Style>
+        <Style x:Key="GridLinesPanelStyle" TargetType="s:GridLinesPanel">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style x:Key="AxisStyle" TargetType="s:AxisBase">
+            <Setter Property="AxisBandsFill" Value="Transparent"/>
+            <Setter Property="MajorGridLineStyle">
+                <Setter.Value>
+                    <Style TargetType="Line">
+                        <Setter Property="Stroke" Value="Transparent"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="MinorGridLineStyle">
+                <Setter.Value>
+                    <Style TargetType="Line">
+                        <Setter Property="Stroke" Value="Transparent"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CursorLineStyle" TargetType="Line">
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="Stroke" Value="#AAFF6600" />
+        </Style>
+
+        <Style x:Key="CursorTooltipStyle" TargetType="s:CursorLabelControl">
+             <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="s:CursorLabelControl">
+                        <Border Background="#AAFF6600"
+                                BorderBrush="#FFFF6600"
+                                BorderThickness="2"
+                                Opacity="0.7"
+                                Padding="2.5">
+                            <ItemsControl ItemsSource="{Binding DataContext.SeriesData.SeriesInfo, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="s:SeriesInfo">
+                                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource SeriesInfoTemplate}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="HMCheckBoxStyle" TargetType="{x:Type CheckBox}">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColorBright}"/>
+            <Setter Property="FontFamily" Value="Tahoma"/>
+            <Setter Property="BorderBrush" Value="{StaticResource LineColorDark}"/>
+            <Setter Property="Background" Value="{StaticResource MenuColor}"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Text Box -->
+        <Style TargetType="TextBox" x:Key="HMTextBox">
+            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="{StaticResource LineColorDark}"
+                  BorderThickness="1" Background="{StaticResource TitleBarColor}" >
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextColorBright}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextColorBright}" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextColorBright}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextColorBright}" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="Transparent">
+        <Grid.Resources>
+
+            <Style x:Key="TextBoxStyle" TargetType="TextBox">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontFamily" Value="Segoe UI Semibold" />
+                <Setter Property="Foreground" Value="#FFF" />
+                <Setter Property="Background" Value="#FF323539" />
+                <Setter Property="BorderBrush" Value="#FF5B5B5B" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Style>
+
+            <Style x:Key="AxisLabelStyle" TargetType="s:DefaultTickLabel">
+                <Setter Property="ContentStringFormat" Value="######.###"/>
+                <Setter Property="TextBlock.TextAlignment" Value="Right"/>
+                <Setter Property="TextBlock.Width" Value="80"/>
+            </Style>
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="26"/>
+        </Grid.RowDefinitions>
+        <s:SciChartSurface x:Name="sciChartSurface"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           RenderableSeries="{s:SeriesBinding SciChartProfile2DModelObj.RenderableSeries}"
+                           ChartTitle="Profile Test"
+                           FontSize="10"
+                           Style="{StaticResource SciChartSurfaceStyle}"
+                           GridLinesPanelStyle="{StaticResource GridLinesPanelStyle}"
+                           >
+            <s:SciChartSurface.XAxis>
+                <s:NumericAxis VisibleRange="{Binding SciChartProfile2DModelObj.XAxis, Mode=TwoWay}" 
+                               ContentStringFormat="0"
+                               TextFormatting="#####0"
+                               Style="{StaticResource AxisStyle}">
+                </s:NumericAxis>
+            </s:SciChartSurface.XAxis>            
+
+            <s:SciChartSurface.YAxis>
+                <s:NumericAxis VisibleRange="{Binding SciChartProfile2DModelObj.YAxis, Mode=TwoWay}" 
+                               TextFormatting="#####0.###"
+                               Style="{StaticResource AxisStyle}">
+                    <s:NumericAxis.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Width" Value="80"/>
+                        </Style>
+                    </s:NumericAxis.Resources>
+                </s:NumericAxis>
+            </s:SciChartSurface.YAxis>
+
+            <s:SciChartSurface.ChartModifier>
+                <s:ModifierGroup>
+                    <s:RubberBandXyZoomModifier IsEnabled="{Binding SciChartProfile2DModelObj.EnableZoom}"/>
+                    <s:ZoomPanModifier IsEnabled="{Binding SciChartProfile2DModelObj.EnablePan}" ClipModeX="None"/>
+                    <s:ZoomExtentsModifier/>
+                </s:ModifierGroup>
+            </s:SciChartSurface.ChartModifier>
+
+            <!--  A nice technique is to put the rollover legend inside an annotation with relative coordinates, then it is always inside the chart surface  -->
+        </s:SciChartSurface>
+        
+        <DockPanel Grid.Row="1" Grid.Column="0" x:Name="uiXMinMax">
+            <TextBox x:Name="uiXMin" Width="50" Margin="3"
+                     Style="{StaticResource HMTextBox}" 
+                     DockPanel.Dock="Left" 
+                     HorizontalAlignment="Left" 
+                     VerticalAlignment="Center"                     
+                     Text="{Binding XMin, Mode=TwoWay}">
+                <behaviors:Interaction.Behaviors>
+                    <view:TextBoxEnterKeyUpdateBehavior/>
+                </behaviors:Interaction.Behaviors>
+            </TextBox>
+            <TextBox x:Name="uiXMax" Width="50" Margin="3"
+                     Style="{StaticResource HMTextBox}" 
+                     DockPanel.Dock="Right" 
+                     HorizontalAlignment="Right" 
+                     Text="{Binding XMax, Mode=TwoWay}">
+                <behaviors:Interaction.Behaviors>
+                    <view:TextBoxEnterKeyUpdateBehavior/>
+                </behaviors:Interaction.Behaviors>
+            </TextBox>
+        </DockPanel>
+
+        <DockPanel Grid.Row="0" Grid.Column="1" x:Name="uiYMinMax">
+            <TextBox x:Name="uiYMin"  Margin="3"
+                     Style="{StaticResource HMTextBox}" 
+                     DockPanel.Dock="Bottom" 
+                     VerticalAlignment="Bottom" 
+                     Text="{Binding YMin, Mode=TwoWay}">
+                <behaviors:Interaction.Behaviors>
+                    <view:TextBoxEnterKeyUpdateBehavior/>
+                </behaviors:Interaction.Behaviors>
+            </TextBox>
+            <TextBox x:Name="uiYMax"  Margin="3"
+                     Style="{StaticResource HMTextBox}" 
+                     DockPanel.Dock="Top" 
+                     VerticalAlignment="Top" 
+                     Text="{Binding YMax, Mode=TwoWay}">
+                <behaviors:Interaction.Behaviors>
+                    <view:TextBoxEnterKeyUpdateBehavior/>
+                </behaviors:Interaction.Behaviors>
+            </TextBox>
+        </DockPanel>
+
+        <CheckBox Grid.Row="1" Grid.Column="1" Margin="3"
+                  Style="{StaticResource HMCheckBoxStyle}" 
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsChecked="{Binding IsAutoScaled, Mode=TwoWay}"/>
+    </Grid>
+</UserControl>

@@ -92,6 +92,12 @@ namespace DetectPosition
                 {
                     SourceMat = new cv.Mat( dialog.FileName, ImreadModes.Grayscale );
 
+                    cv.Mat histoEqualized = new cv.Mat();
+
+                    cv.Cv2.EqualizeHist( SourceMat, histoEqualized );
+
+                    SourceMat = histoEqualized.Clone();
+
                     Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                     {
                         SourceImage = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( SourceMat.Clone() );
@@ -117,14 +123,48 @@ namespace DetectPosition
             OpenFileDialog dialog = new OpenFileDialog();
             Nullable<bool> result = false;
             dialog.Filter = "PNG files (*.png)|*.png|BMP files (*.bmp)|*.bmp";
-            dialog.Multiselect = false;
+            dialog.Multiselect = true;
             result = dialog.ShowDialog();
 
             if ( (bool)result )
             {
                 if ( dialog.FileNames.Length >= 1 )
                 {
-                    MasterMat = new cv.Mat( dialog.FileName, ImreadModes.Grayscale );
+                    cv.Mat[] masters = new cv.Mat[ dialog.FileNames.Length ];
+                    byte[][] data = new byte[ dialog.FileNames.Length ][];
+
+                    Parallel.For(
+                        0, dialog.FileNames.Length, i =>
+                        {
+                            masters[ i ] = new cv.Mat( dialog.FileNames[ i ], ImreadModes.Grayscale );
+                            data[ i ] = new byte[ masters[ i ].Width * masters[ i ].Height ];
+                            Marshal.Copy( masters[ i ].Data, data[ i ], 0, masters[ i ].Width * masters[ i ].Height );
+                        }
+                    );
+
+                    byte[] averaged = new byte[ masters[ 0 ].Width * masters[ 0 ].Height ];
+
+                    Parallel.For(
+                        0, averaged.Length, i =>
+                        {
+                            int sum = 0;
+
+                            for ( int j = 0; j < data.Length; ++j )
+                            {
+                                sum += data[ j ][ i ];
+                            }
+
+                            averaged[ i ] = (byte) ( sum / data.Length );
+                        }
+                    );
+
+                    MasterMat = new cv.Mat( masters[ 0 ].Height, masters[ 0 ].Width, cv.MatType.CV_8UC1, averaged );
+
+                    cv.Mat histoEqualized = new cv.Mat();
+
+                    cv.Cv2.EqualizeHist( MasterMat, histoEqualized );
+
+                    MasterMat = histoEqualized.Clone();
 
                     Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                     {
@@ -153,10 +193,71 @@ namespace DetectPosition
                 cv.Cv2.Subtract( MasterMat, SourceMat, subtracted );
 
                 DestinationMat = subtracted.Clone();
+                cv.Cv2.MedianBlur( DestinationMat, DestinationMat, 27 );
+
+                float[] sharpenFilterData = new float[ 9 ]
+                {
+                    1, -2, 1,
+                    -2, 5, -2,
+                    1, -2, 1
+                };
+
+                cv.Mat sharpenFilter = new cv.Mat( 3, 3, MatType.CV_32FC1, sharpenFilterData );
+
+                cv.Cv2.Filter2D( DestinationMat, DestinationMat, DestinationMat.Type(), sharpenFilter );
+
+                byte[] data = new byte[ subtracted.Height * subtracted.Width ];
+                int[] histo = new int[ 255 ];
+
+                Parallel.For(
+                    0, 255, i =>
+                    {
+                        histo[ i ] = 0;
+                    }
+                );
+
+                Marshal.Copy( DestinationMat.Data, data, 0, DestinationMat.Height * DestinationMat.Width );
+
+                Parallel.For(
+                    0, DestinationMat.Height * DestinationMat.Width, i =>
+                    {
+                        object lockObject = new object();
+
+                        lock ( lockObject )
+                        {
+                            histo[ data[ i ] ] += 1;
+                        }
+                    }
+                );
+
+                SetHistogram?.Invoke( histo );
+
+                cv.Mat thresholded = new cv.Mat();
+                cv.Mat morph = new cv.Mat();
+
+                cv.Cv2.Threshold( DestinationMat, thresholded, 20.0, 255.0, ThresholdTypes.Binary );
+                // cv.Cv2.AdaptiveThreshold( subtracted, thresholded, 255.0, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.Binary, 25, 0 );
+
+                cv.Cv2.MorphologyEx( thresholded, morph, MorphTypes.HitMiss, null );
+
+                cv.Mat labels = new cv.Mat();
+
+                cv.SimpleBlobDetector blobDetector = SimpleBlobDetector.Create();
+                var points = blobDetector.Detect( morph );
+
+                SourceMat.ConvertTo( labels, cv.MatType.CV_8UC3 );
+
+                foreach ( var point in points )
+                {
+                
+                }
 
                 Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                 {
                     Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
+                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone() );
+                    Result4Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( thresholded.Clone() );
+                    Result5Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( morph.Clone() );
                 } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
             }
             catch ( Exception ex )
@@ -165,6 +266,80 @@ namespace DetectPosition
             }
         }
 
+        private void InnerApplyAbsDiffMasterSource()
+        {
+            try
+            {
+                var subtracted = new cv.Mat();
+
+                cv.Cv2.Absdiff( MasterMat, SourceMat, subtracted );
+
+                DestinationMat = subtracted.Clone();
+                cv.Cv2.MedianBlur( DestinationMat, DestinationMat, 27 );
+
+                float[] sharpenFilterData = new float[ 9 ]
+                {
+                    0, -1, 0,
+                    -1, 5, -1,
+                    0, -1, 0
+                };
+
+                cv.Mat sharpenFilter = new cv.Mat( 3, 3, MatType.CV_32FC1, sharpenFilterData );
+
+                cv.Cv2.Filter2D( DestinationMat, DestinationMat, DestinationMat.Type(), sharpenFilter );
+
+                byte[] data = new byte[ DestinationMat.Height * DestinationMat.Width ];
+                int[] histo = new int[ 255 ];
+
+                Parallel.For(
+                    0, 255, i =>
+                    {
+                        histo[ i ] = 0;
+                    }
+                );
+
+                Marshal.Copy( DestinationMat.Data, data, 0, DestinationMat.Height * DestinationMat.Width );
+
+                Parallel.For(
+                    0, DestinationMat.Height * DestinationMat.Width, i =>
+                    {
+                        object lockObject = new object();
+
+                        lock ( lockObject )
+                        {
+                            histo[ data[ i ] ] += 1;
+                        }
+                    }
+                );
+
+                SetHistogram?.Invoke( histo );
+
+                cv.Mat thresholded = new cv.Mat();
+                cv.Mat morph = new cv.Mat();
+
+                cv.Cv2.Threshold( DestinationMat, thresholded, 20.0, 255.0, ThresholdTypes.Binary );
+                // cv.Cv2.AdaptiveThreshold( subtracted, thresholded, 255.0, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.Binary, 25, 0 );
+
+                cv.Cv2.MorphologyEx( thresholded, morph, MorphTypes.HitMiss, null );
+
+                cv.Mat labels = new cv.Mat();
+
+                cv.SimpleBlobDetector blobDetector = SimpleBlobDetector.Create();
+                var points = blobDetector.Detect( morph );
+
+                Application.Current.Dispatcher.InvokeAsync( new Action( () =>
+                {
+                    Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
+                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone() );
+                    Result4Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( thresholded.Clone() );
+                    Result5Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( morph.Clone() );
+                } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
+            }
+            catch ( Exception ex )
+            {
+                MessageBox.Show( ex.Message );
+            }
+        }
 
         private void InnerApplyMSER()
         {
@@ -463,6 +638,7 @@ namespace DetectPosition
             ApplyQuantizationArithmatic += new Action( InnerApplyQuantizationArithmatic );
             ApplyGuidedFilter += new Action( InnerApplyGuidedFilter );
             ApplySubtractMasterSource += new Action( InnerApplySubtractMasterSource );
+            ApplyAbsDiffMasterSource += new Action( InnerApplyAbsDiffMasterSource );
             ApplyCubicSpline += new Action( InnerApplyCubicSpline );
 
             SaveSourceImage += new Action( InnerSaveSourceImage );
@@ -662,6 +838,12 @@ namespace DetectPosition
             set;
         }
 
+        public Action ApplyAbsDiffMasterSource
+        {
+            get;
+            set;
+        }
+
         public Action ApplyCubicSpline
         {
             get;
@@ -669,6 +851,12 @@ namespace DetectPosition
         }
 
         public Action SaveSourceImage
+        {
+            get;
+            set;
+        }
+
+        public Action<int[]> SetHistogram
         {
             get;
             set;

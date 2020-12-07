@@ -132,6 +132,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Base\Base.csproj">
+      <Project>{2b113baa-3d56-4aad-92f6-2ebe61c77cdd}</Project>
+      <Name>Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\SciChartWrapper\SciChartWrapper.csproj">
+      <Project>{4aed88fc-9df3-49a1-ac78-ddaee7671d43}</Project>
+      <Name>SciChartWrapper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

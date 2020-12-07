@@ -5,6 +5,12 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetectPosition", "DetectPosition\DetectPosition.csproj", "{E2307492-A570-47C6-8EDF-CD3A46AFA1D5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{C82E8152-70F0-4101-946E-D2CE2ACC287A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "Common\Base\Base.csproj", "{2B113BAA-3D56-4AAD-92F6-2EBE61C77CDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciChartWrapper", "Common\SciChartWrapper\SciChartWrapper.csproj", "{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,9 +21,21 @@ Global
 		{E2307492-A570-47C6-8EDF-CD3A46AFA1D5}.Debug|x64.Build.0 = Debug|x64
 		{E2307492-A570-47C6-8EDF-CD3A46AFA1D5}.Release|x64.ActiveCfg = Release|x64
 		{E2307492-A570-47C6-8EDF-CD3A46AFA1D5}.Release|x64.Build.0 = Release|x64
+		{2B113BAA-3D56-4AAD-92F6-2EBE61C77CDD}.Debug|x64.ActiveCfg = Debug|x64
+		{2B113BAA-3D56-4AAD-92F6-2EBE61C77CDD}.Debug|x64.Build.0 = Debug|x64
+		{2B113BAA-3D56-4AAD-92F6-2EBE61C77CDD}.Release|x64.ActiveCfg = Release|x64
+		{2B113BAA-3D56-4AAD-92F6-2EBE61C77CDD}.Release|x64.Build.0 = Release|x64
+		{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}.Debug|x64.ActiveCfg = Debug|x64
+		{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}.Debug|x64.Build.0 = Debug|x64
+		{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}.Release|x64.ActiveCfg = Release|x64
+		{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2B113BAA-3D56-4AAD-92F6-2EBE61C77CDD} = {C82E8152-70F0-4101-946E-D2CE2ACC287A}
+		{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43} = {C82E8152-70F0-4101-946E-D2CE2ACC287A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {260102BE-23B8-490C-9233-4F0434CA55F4}

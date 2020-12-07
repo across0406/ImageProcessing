@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\OpenCvSharp4.runtime.win.4.4.0.20200725\build\net\OpenCvSharp4.runtime.win.props" Condition="Exists('..\..\packages\OpenCvSharp4.runtime.win.4.4.0.20200725\build\net\OpenCvSharp4.runtime.win.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2B113BAA-3D56-4AAD-92F6-2EBE61C77CDD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Base</RootNamespace>
+    <AssemblyName>Base</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.9.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.10\lib\net45\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenCvSharp4.4.4.0.20200725\lib\net48\OpenCvSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.Blob, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenCvSharp4.4.4.0.20200725\lib\net48\OpenCvSharp.Blob.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenCvSharp4.4.4.0.20200725\lib\net48\OpenCvSharp.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenCvSharp.WpfExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenCvSharp4.WpfExtensions.4.4.0.20200725\lib\net48\OpenCvSharp.WpfExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Drawing.Common.4.7.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BasePropertyChanged.cs" />
+    <Compile Include="Controls\NumericUpDownBox.xaml.cs">
+      <DependentUpon>NumericUpDownBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IniFile.cs" />
+    <Compile Include="Types\Complex.cs" />
+    <Compile Include="Controls\ImageViewer\DisplayInfo.cs" />
+    <Compile Include="Controls\ImageViewer\ImageView.xaml.cs">
+      <DependentUpon>ImageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ImageViewer\ImageViewModel.cs" />
+    <Compile Include="Controls\ImageViewer\EOverlayType.cs" />
+    <Compile Include="Logging.cs" />
+    <Compile Include="Types\ParamCollectionItemType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Win32API.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\NumericUpDownBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ImageViewer\ImageView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Controls\ImageViewer\Resources\3d_symbol.png" />
+    <Resource Include="Controls\ImageViewer\Resources\3d_symbol_c.png" />
+    <Resource Include="Controls\ImageViewer\Resources\ic_load_black_48dp.png" />
+    <Resource Include="Controls\ImageViewer\Resources\ic_save_black_48dp.png" />
+    <Resource Include="Controls\ImageViewer\Resources\ic_zoom_fit_black_48dp.png" />
+    <Resource Include="Controls\ImageViewer\Resources\ic_zoom_in_black_48dp.png" />
+    <Resource Include="Controls\ImageViewer\Resources\ic_zoom_out_black_48dp.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_crossline.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_crossline_c.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_fit.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_fit_c.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_hcolor.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_hcolor_c.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_roi.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_roi_c.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_ruler.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_ruler_c.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_set.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_set_c.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_zoomin.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_zoomin_c.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_zoomout.png" />
+    <Resource Include="Controls\ImageViewer\Resources\viewer_zoomout_c.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>이 프로젝트는 이 컴퓨터에 없는 NuGet 패키지를 참조합니다. 해당 패키지를 다운로드하려면 NuGet 패키지 복원을 사용하십시오. 자세한 내용은 http://go.microsoft.com/fwlink/?LinkID=322105를 참조하십시오. 누락된 파일은 {0}입니다.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\OpenCvSharp4.runtime.win.4.4.0.20200725\build\net\OpenCvSharp4.runtime.win.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenCvSharp4.runtime.win.4.4.0.20200725\build\net\OpenCvSharp4.runtime.win.props'))" />
+  </Target>
+</Project>

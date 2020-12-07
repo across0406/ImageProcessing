@@ -83,6 +83,11 @@ namespace DetectPosition
             ViewModel?.SaveSourceImage?.Invoke();
         }
 
+        private void ClickApplyAbsDiff( object sender, RoutedEventArgs e )
+        {
+            ViewModel?.ApplyAbsDiffMasterSource?.Invoke();
+        }
+
         #endregion Private Methods
 
         #region Constructors
@@ -103,6 +108,15 @@ namespace DetectPosition
             set
             {
                 _viewModel = value;
+
+                if ( _viewModel == null )
+                {
+                }
+                else
+                {
+                    _viewModel.SetHistogram += new Action<int[]>( _histogram.SetData );
+                }
+
                 this.DataContext = _viewModel;
             }
         }
