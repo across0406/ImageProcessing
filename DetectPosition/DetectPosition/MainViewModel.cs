@@ -240,22 +240,25 @@ namespace DetectPosition
 
                 cv.Cv2.MorphologyEx( thresholded, morph, MorphTypes.HitMiss, null );
 
+                morph.ImWrite( "D:/morph.bmp" );
+
                 cv.Mat labels = new cv.Mat();
+                cv.Cv2.CvtColor(SourceMat, labels, ColorConversionCodes.GRAY2BGR );
 
-                cv.SimpleBlobDetector blobDetector = SimpleBlobDetector.Create();
-                var points = blobDetector.Detect( morph );
+                cv.Point[][] contours = null;
+                cv.HierarchyIndex[] hierarchyIndices = null;
+                cv.Cv2.FindContours( morph, out contours, out hierarchyIndices, 
+                                     RetrievalModes.Tree, ContourApproximationModes.ApproxNone );
 
-                SourceMat.ConvertTo( labels, cv.MatType.CV_8UC3 );
-
-                foreach ( var point in points )
+                for ( int i = 0;i < contours.Length; ++i )
                 {
-                
+                    cv.Cv2.DrawContours( labels, contours, i, Scalar.Red, 2, LineTypes.AntiAlias );
                 }
 
                 Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                 {
                     Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
-                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone() );
+                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone(), PixelFormats.Bgr24 );
                     Result4Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( thresholded.Clone() );
                     Result5Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( morph.Clone() );
                 } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
@@ -321,16 +324,28 @@ namespace DetectPosition
                 // cv.Cv2.AdaptiveThreshold( subtracted, thresholded, 255.0, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.Binary, 25, 0 );
 
                 cv.Cv2.MorphologyEx( thresholded, morph, MorphTypes.HitMiss, null );
+                cv.Cv2.MorphologyEx( morph, morph, MorphTypes.Dilate, null );
+
+                morph.ImWrite( "D:/morph.bmp" );
 
                 cv.Mat labels = new cv.Mat();
+                cv.Cv2.CvtColor( SourceMat, labels, ColorConversionCodes.GRAY2BGR );
 
-                cv.SimpleBlobDetector blobDetector = SimpleBlobDetector.Create();
-                var points = blobDetector.Detect( morph );
+                cv.Point[][] contours = null;
+                cv.HierarchyIndex[] hierarchyIndices = null;
+                cv.Cv2.FindContours( morph, out contours, out hierarchyIndices,
+                                     RetrievalModes.Tree, ContourApproximationModes.ApproxNone );
+
+                for ( int i = 0; i < contours.Length; ++i )
+                {
+                    cv.Cv2.DrawContours( labels, contours, i, Scalar.Red, 2, LineTypes.AntiAlias );
+                }
 
                 Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                 {
                     Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
-                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone() );
+                    Result2Image = new WriteableBitmap( labels.Cols, labels.Rows, 96, 96, PixelFormats.Bgr24, null );
+                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone(), PixelFormats.Bgr24 );
                     Result4Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( thresholded.Clone() );
                     Result5Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( morph.Clone() );
                 } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
