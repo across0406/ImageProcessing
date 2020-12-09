@@ -162,9 +162,13 @@ namespace DetectPosition
 
                     cv.Mat histoEqualized = new cv.Mat();
 
+                    MasterMat.ImWrite( "D:/MasterImage.bmp" );
+
                     cv.Cv2.EqualizeHist( MasterMat, histoEqualized );
 
                     MasterMat = histoEqualized.Clone();
+
+                    MasterMat.ImWrite( "D:/MasterImageHisoEqualized.bmp" );
 
                     Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                     {
