@@ -38,29 +38,9 @@ namespace DetectPosition
             ViewModel?.MasterImageOpen?.Invoke();
         }
 
-        private void ApplyMedianlick( object sender, RoutedEventArgs e )
-        {
-            ViewModel?.ApplyMedian?.Invoke();
-        }
-
         private void ApplyMSERClick( object sender, RoutedEventArgs e )
         {
             ViewModel?.ApplyMSER?.Invoke();
-        }
-
-        private void ApplyDFTClick( object sender, RoutedEventArgs e )
-        {
-            ViewModel?.ApplyDFT?.Invoke();
-        }
-
-        private void ApplyBitwiseClick( object sender, RoutedEventArgs e )
-        {
-            ViewModel?.ApplyBitwise?.Invoke();
-        }
-
-        private void ApplyQuantizationArithmatic( object sender, RoutedEventArgs e )
-        {
-            ViewModel?.ApplyQuantizationArithmatic?.Invoke();
         }
 
         private void ApplyGuidedFilter( object sender, RoutedEventArgs e )
@@ -68,14 +48,9 @@ namespace DetectPosition
             ViewModel?.ApplyGuidedFilter?.Invoke();
         }
 
-        private void DiffMasterSourceClick( object sender, RoutedEventArgs e )
+        private void ClickDiffMasterSource( object sender, RoutedEventArgs e )
         {
             ViewModel?.ApplySubtractMasterSource?.Invoke();
-        }
-
-        private void ApplyCubicSpline( object sender, RoutedEventArgs e )
-        {
-            ViewModel?.ApplyCubicSpline?.Invoke();
         }
 
         private void OnSourceImageMouseRightButtonDown( object sender, MouseButtonEventArgs e )
@@ -83,9 +58,9 @@ namespace DetectPosition
             ViewModel?.SaveSourceImage?.Invoke();
         }
 
-        private void ClickApplyAbsDiff( object sender, RoutedEventArgs e )
+        private void ApplyBilateralSubtract( object sender, RoutedEventArgs e )
         {
-            ViewModel?.ApplyAbsDiffMasterSource?.Invoke();
+            _viewModel?.ApplyBilateralSubtract?.Invoke();
         }
 
         #endregion Private Methods
@@ -121,8 +96,7 @@ namespace DetectPosition
             }
         }
 
-        #endregion Public Properties
 
-        
+        #endregion Public Properties
     }
 }

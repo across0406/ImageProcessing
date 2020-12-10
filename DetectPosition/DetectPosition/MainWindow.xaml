@@ -58,28 +58,16 @@
                     Click="MasterImageOpenClick" Margin="5" />
 
             <Button Content="Master - Source" MinWidth="50" MinHeight="50" 
-                    Click="DiffMasterSourceClick" Margin="5" />
-
-            <Button Content="Abs( Master - Source )" MinWidth="50" MinHeight="50" 
-                    Click="ClickApplyAbsDiff" Margin="5" />
-            
-            <Button Content="Median" MinWidth="50" MinHeight="50" 
-                    Click="ApplyMedianlick" Margin="5" />
-
-            <Button Content="Bitwise" MinWidth="50" MinHeight="50" 
-                    Click="ApplyBitwiseClick" Margin="5" />
+                    Click="ClickDiffMasterSource" Margin="5" />
 
             <Button Content="MSER" MinWidth="50" MinHeight="50" 
                     Click="ApplyMSERClick" Margin="5" />
 
-            <Button Content="Arithmatic Quantization" MinWidth="50" MinHeight="50" 
-                    Click="ApplyQuantizationArithmatic" Margin="5" />
-
             <Button Content="Guided Filter" MinWidth="50" MinHeight="50" 
                     Click="ApplyGuidedFilter" Margin="5" />
 
-            <Button Content="Cubic Spline" MinWidth="50" MinHeight="50" 
-                    Click="ApplyCubicSpline" Margin="5" />
+            <Button Content="Bilateral Subtract" MinWidth="50" MinHeight="50" 
+                    Click="ApplyBilateralSubtract" Margin="5" />
         </StackPanel>
     </Grid>
 </Window>

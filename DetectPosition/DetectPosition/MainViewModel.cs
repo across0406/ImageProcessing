@@ -247,6 +247,7 @@ namespace DetectPosition
                 morph.ImWrite( "D:/morph.bmp" );
 
                 cv.Mat labels = new cv.Mat();
+                cv.Mat region = new cv.Mat();
                 cv.Cv2.CvtColor(SourceMat, labels, ColorConversionCodes.GRAY2BGR );
 
                 cv.Point[][] contours = null;
@@ -254,18 +255,118 @@ namespace DetectPosition
                 cv.Cv2.FindContours( morph, out contours, out hierarchyIndices, 
                                      RetrievalModes.Tree, ContourApproximationModes.ApproxNone );
 
-                for ( int i = 0;i < contours.Length; ++i )
+                
+
+                if ( contours.Length >= 1 )
                 {
-                    cv.Cv2.DrawContours( labels, contours, i, Scalar.Red, 2, LineTypes.AntiAlias );
+                    int argMax = 0;
+                    int maxCount = contours[ 0 ].Length;
+
+                    for ( int i = 0; i < contours.Length; ++i )
+                    {
+                        if ( maxCount >= contours[ i ].Length )
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            argMax = i;
+                            maxCount = contours[ i ].Length;
+                        }
+                    }
+
+                    RotatedRect rotatedRect = cv.Cv2.MinAreaRect( contours[ argMax ] );
+                    cv.Rect rect = rotatedRect.BoundingRect();
+
+                    const int margin = 10;
+
+                    int compensatedX = rect.X - margin;
+                    int compensatedY = rect.Y - margin;
+
+                    if ( rect.X - margin < 0 )
+                    {
+                        rect.X = 0;
+                        compensatedX = 0;
+                    }
+                    else
+                    {
+                        rect.X -= margin;
+                        compensatedX = rect.X;
+                    }
+
+                    if ( rect.X + rect.Width + margin >= labels.Cols )
+                    {
+                        rect.Width = labels.Cols - rect.X;
+                    }
+                    else
+                    {
+                        rect.Width += 2 * margin;
+                    }
+
+                    if ( rect.Y - margin < 0 )
+                    {
+                        rect.Y = 0;
+                        compensatedY = 0;
+                    }
+                    else
+                    {
+                        rect.Y -= margin;
+                        compensatedY = rect.Y;
+                    }
+
+                    if ( rect.Y + rect.Height + margin >= labels.Rows )
+                    {
+                        rect.Height = labels.Rows - rect.Y;
+                    }
+                    else
+                    {
+                        rect.Height += 2 * margin;
+                    }
+
+                    region = labels.SubMat( rect );
+
+                    object lockObject = new object();
+                    
+                    Parallel.For(
+                        0, region.Rows, i =>
+                        {
+                            for ( int j = 0; j < region.Cols; ++j )
+                            {
+                                lock ( lockObject )
+                                {
+                                    double dist = cv.Cv2.PointPolygonTest( contours[ argMax ], new Point2f( j + compensatedX, i + compensatedY ), false );
+                    
+                                    if ( dist < 0.0 )
+                                    {
+                                        var point = region.At<Vec3b>( i, j );
+                                        point.Item0 = 50;
+                                        point.Item1 = 50;
+                                        point.Item2 = 50;
+
+                                        region.Set<Vec3b>( i, j, point );
+                                    }
+                                    else
+                                    {
+                    
+                                    }
+                                }
+                            }
+                        }
+                    );
+                }
+
+                for ( int i = 0; i < contours.Length; ++i )
+                {
+                    // cv.Cv2.DrawContours( labels, contours, i, Scalar.Red, 2, LineTypes.AntiAlias );
                 }
 
                 Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                 {
                     Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
-                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone(), PixelFormats.Bgr24 );
+                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( region.Clone() );
                     Result4Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( thresholded.Clone() );
                     Result5Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( morph.Clone() );
-                } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
+                } ), System.Windows.Threading.DispatcherPriority.Background );
             }
             catch ( Exception ex )
             {
@@ -340,19 +441,64 @@ namespace DetectPosition
                 cv.Cv2.FindContours( morph, out contours, out hierarchyIndices,
                                      RetrievalModes.Tree, ContourApproximationModes.ApproxNone );
 
+                if ( contours.Length >= 1 )
+                {
+                    int argMax = 0;
+                    int maxCount = contours[ 0 ].Length;
+
+                    for ( int i = 0; i < contours.Length; ++i )
+                    {
+                        if ( maxCount >= contours[ i ].Length )
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            argMax = i;
+                            maxCount = contours[ i ].Length;
+                        }
+                    }
+
+                    object lockObject = new object();
+
+                    Parallel.For(
+                        0, labels.Rows, i =>
+                        {
+                            for ( int j = 0; j < labels.Cols; ++j )
+                            {
+                                lock ( lockObject )
+                                {
+                                    double dist = cv.Cv2.PointPolygonTest( contours[ argMax ], new Point2f( j, i ), false );
+
+                                    if ( dist < 0.0 )
+                                    {
+                                        var point = labels.At<Vec3b>( i, j );
+                                        point.Item0 = 50;
+                                        point.Item1 = 50;
+                                        point.Item2 = 50;
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                            }
+                        }
+                    );
+                }
+
                 for ( int i = 0; i < contours.Length; ++i )
                 {
-                    cv.Cv2.DrawContours( labels, contours, i, Scalar.Red, 2, LineTypes.AntiAlias );
+                    // cv.Cv2.DrawContours( labels, contours, i, Scalar.Red, 2, LineTypes.AntiAlias );
                 }
 
                 Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                 {
                     Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
-                    Result2Image = new WriteableBitmap( labels.Cols, labels.Rows, 96, 96, PixelFormats.Bgr24, null );
-                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone(), PixelFormats.Bgr24 );
+                    Result2Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( labels.Clone() );
                     Result4Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( thresholded.Clone() );
                     Result5Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( morph.Clone() );
-                } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
+                } ), System.Windows.Threading.DispatcherPriority.Background );
             }
             catch ( Exception ex )
             {
@@ -550,65 +696,192 @@ namespace DetectPosition
             }
         }
 
-        private void InnerApplyCubicSpline()
+        private void InnerApplyBilateralSubtract()
         {
             try
             {
+                var bilateralMat = new cv.Mat();
+                var gaussianMat = new cv.Mat();
                 var subtracted = new cv.Mat();
-                var splined = new cv.Mat();
-                byte[] byteData = null;
-                float[] floatData = null;
-                float[][] reformat = null;
-                float[] interpolated = null;
-                float[] floatResult = null;
-                byte[] byteResult = null;
 
-                cv.Cv2.Subtract( MasterMat, SourceMat, subtracted );
+                cv.Cv2.BilateralFilter( SourceMat, bilateralMat, 7, 10.0, 10.0 );
+                cv.Cv2.GaussianBlur( SourceMat, gaussianMat, new cv.Size( 27, 27 ), 0 );
 
-                byteData = new byte[ SourceMat.Width * SourceMat.Height ];
-                floatData = new float[ SourceMat.Width * SourceMat.Height ];
-                Marshal.Copy( SourceMat.Data, byteData, 0, SourceMat.Width * SourceMat.Height );
+                cv.Cv2.Subtract( gaussianMat, SourceMat, subtracted );
 
-                Parallel.For( 0, SourceMat.Width * SourceMat.Height, i =>
+                DestinationMat = subtracted.Clone();
+                cv.Cv2.MedianBlur( DestinationMat, DestinationMat, 27 );
+                
+                float[] sharpenFilterData = new float[ 9 ]
                 {
-                    floatData[ i ] = (float)byteData[ i ];
-                } );
-
-                reformat = new float[ SourceMat.Width * SourceMat.Height ][];
-                interpolated = new float[ SourceMat.Width * SourceMat.Height ];
-                floatResult = new float[ SourceMat.Width * SourceMat.Height ];
-                byteResult = new byte[ SourceMat.Width * SourceMat.Height ];
-
-                Parallel.For( 0, SourceMat.Height, i =>
+                    1, -2, 1,
+                    -2, 5, -2,
+                    1, -2, 1
+                };
+                
+                cv.Mat sharpenFilter = new cv.Mat( 3, 3, MatType.CV_32FC1, sharpenFilterData );
+                
+                cv.Cv2.Filter2D( DestinationMat, DestinationMat, DestinationMat.Type(), sharpenFilter );
+                
+                //byte[] data = new byte[ subtracted.Height * subtracted.Width ];
+                //int[] histo = new int[ 255 ];
+                //
+                //Parallel.For(
+                //    0, 255, i =>
+                //    {
+                //        histo[ i ] = 0;
+                //    }
+                //);
+                //
+                //Marshal.Copy( DestinationMat.Data, data, 0, DestinationMat.Height * DestinationMat.Width );
+                //
+                //Parallel.For(
+                //    0, DestinationMat.Height * DestinationMat.Width, i =>
+                //    {
+                //        object lockObject = new object();
+                //
+                //        lock ( lockObject )
+                //        {
+                //            histo[ data[ i ] ] += 1;
+                //        }
+                //    }
+                //);
+                //
+                //SetHistogram?.Invoke( histo );
+                
+                cv.Mat thresholded = new cv.Mat();
+                cv.Mat morph = new cv.Mat();
+                
+                cv.Cv2.Threshold( DestinationMat, thresholded, 10.0, 255.0, ThresholdTypes.Binary );
+                // cv.Cv2.AdaptiveThreshold( subtracted, thresholded, 255.0, AdaptiveThresholdTypes.GaussianC, ThresholdTypes.Binary, 25, 0 );
+                
+                cv.Cv2.MorphologyEx( thresholded, morph, MorphTypes.HitMiss, null );
+                
+                morph.ImWrite( "D:/morph.bmp" );
+                
+                cv.Mat labels = new cv.Mat();
+                cv.Mat region = new cv.Mat();
+                cv.Cv2.CvtColor( SourceMat, labels, ColorConversionCodes.GRAY2BGR );
+                
+                cv.Point[][] contours = null;
+                cv.HierarchyIndex[] hierarchyIndices = null;
+                cv.Cv2.FindContours( morph, out contours, out hierarchyIndices,
+                                     RetrievalModes.Tree, ContourApproximationModes.ApproxNone );
+                
+                
+                
+                if ( contours.Length >= 1 )
                 {
-                    for ( int j = 0; j < SourceMat.Width; ++j )
+                    int argMax = 0;
+                    int maxCount = contours[ 0 ].Length;
+                
+                    for ( int i = 0; i < contours.Length; ++i )
                     {
-                        reformat[ i * SourceMat.Width + j ] = new float[ 3 ];
-                        reformat[ i * SourceMat.Width + j ][ 0 ] = j;
-                        reformat[ i * SourceMat.Width + j ][ 1 ] = i;
-                        reformat[ i * SourceMat.Width + j ][ 2 ] = (float)byteData[ i * SourceMat.Width + j ];
+                        if ( maxCount >= contours[ i ].Length )
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            argMax = i;
+                            maxCount = contours[ i ].Length;
+                        }
                     }
-                } );
-
-                CubicSpline.Spline3D spline = new CubicSpline.Spline3D( reformat );
-
-                Parallel.For( 0, SourceMat.Height * SourceMat.Width, i =>
+                
+                    RotatedRect rotatedRect = cv.Cv2.MinAreaRect( contours[ argMax ] );
+                    cv.Rect rect = rotatedRect.BoundingRect();
+                
+                    const int margin = 10;
+                
+                    int compensatedX = rect.X - margin;
+                    int compensatedY = rect.Y - margin;
+                
+                    if ( rect.X - margin < 0 )
+                    {
+                        rect.X = 0;
+                        compensatedX = 0;
+                    }
+                    else
+                    {
+                        rect.X -= margin;
+                        compensatedX = rect.X;
+                    }
+                
+                    if ( rect.X + rect.Width + margin >= labels.Cols )
+                    {
+                        rect.Width = labels.Cols - rect.X;
+                    }
+                    else
+                    {
+                        rect.Width += 2 * margin;
+                    }
+                
+                    if ( rect.Y - margin < 0 )
+                    {
+                        rect.Y = 0;
+                        compensatedY = 0;
+                    }
+                    else
+                    {
+                        rect.Y -= margin;
+                        compensatedY = rect.Y;
+                    }
+                
+                    if ( rect.Y + rect.Height + margin >= labels.Rows )
+                    {
+                        rect.Height = labels.Rows - rect.Y;
+                    }
+                    else
+                    {
+                        rect.Height += 2 * margin;
+                    }
+                
+                    region = labels.SubMat( rect );
+                
+                    object lockObject = new object();
+                
+                    Parallel.For(
+                        0, region.Rows, i =>
+                        {
+                            for ( int j = 0; j < region.Cols; ++j )
+                            {
+                                lock ( lockObject )
+                                {
+                                    double dist = cv.Cv2.PointPolygonTest( contours[ argMax ], new Point2f( j + compensatedX, i + compensatedY ), false );
+                
+                                    if ( dist < 0.0 )
+                                    {
+                                        var point = region.At<Vec3b>( i, j );
+                                        point.Item0 = 50;
+                                        point.Item1 = 50;
+                                        point.Item2 = 50;
+                
+                                        region.Set<Vec3b>( i, j, point );
+                                    }
+                                    else
+                                    {
+                
+                                    }
+                                }
+                            }
+                        }
+                    );
+                }
+                
+                for ( int i = 0; i < contours.Length; ++i )
                 {
-                    float[] vec3 = spline.GetPositionAt( i );
-                    interpolated[ i ] = vec3[ 2 ];
-                    byteResult[ i ] = (byte)interpolated[ i ];
-                } );
-
-                splined = cv.Mat.Zeros( SourceMat.Height, SourceMat.Width, MatType.CV_8UC1 ).ToMat();
-
-                Marshal.Copy( byteResult, 0, splined.Data, SourceMat.Height * SourceMat.Width );
-
-                DestinationMat = splined.Clone();
+                    // cv.Cv2.DrawContours( labels, contours, i, Scalar.Red, 2, LineTypes.AntiAlias );
+                }
 
                 Application.Current.Dispatcher.InvokeAsync( new Action( () =>
                 {
                     Result1Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( DestinationMat.Clone() );
-                } ), System.Windows.Threading.DispatcherPriority.ApplicationIdle );
+                    Result3Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( region.Clone() );
+                    Result4Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( thresholded.Clone() );
+                    Result5Image = cv.WpfExtensions.WriteableBitmapConverter.ToWriteableBitmap( morph.Clone() );
+
+
+                } ), System.Windows.Threading.DispatcherPriority.Background );
             }
             catch ( Exception ex )
             {
@@ -658,7 +931,7 @@ namespace DetectPosition
             ApplyGuidedFilter += new Action( InnerApplyGuidedFilter );
             ApplySubtractMasterSource += new Action( InnerApplySubtractMasterSource );
             ApplyAbsDiffMasterSource += new Action( InnerApplyAbsDiffMasterSource );
-            ApplyCubicSpline += new Action( InnerApplyCubicSpline );
+            ApplyBilateralSubtract += new Action( InnerApplyBilateralSubtract );
 
             SaveSourceImage += new Action( InnerSaveSourceImage );
         }
@@ -863,7 +1136,7 @@ namespace DetectPosition
             set;
         }
 
-        public Action ApplyCubicSpline
+        public Action ApplyBilateralSubtract
         {
             get;
             set;
