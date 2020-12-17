@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "Common\Base\Base.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SciChartWrapper", "Common\SciChartWrapper\SciChartWrapper.csproj", "{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurfaceProcessing", "SurfaceProcessing\SurfaceProcessing.csproj", "{A7C15579-41C8-4987-B5EB-73B1D04F2E60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -29,6 +31,9 @@ Global
 		{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}.Debug|x64.Build.0 = Debug|x64
 		{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}.Release|x64.ActiveCfg = Release|x64
 		{4AED88FC-9DF3-49A1-AC78-DDAEE7671D43}.Release|x64.Build.0 = Release|x64
+		{A7C15579-41C8-4987-B5EB-73B1D04F2E60}.Debug|x64.ActiveCfg = Debug|x64
+		{A7C15579-41C8-4987-B5EB-73B1D04F2E60}.Debug|x64.Build.0 = Debug|x64
+		{A7C15579-41C8-4987-B5EB-73B1D04F2E60}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

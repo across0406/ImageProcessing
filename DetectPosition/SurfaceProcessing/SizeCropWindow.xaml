@@ -1,0 +1,83 @@
+﻿<Window x:Class="SurfaceProcessing.SizeCropWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SurfaceProcessing"
+        mc:Ignorable="d"
+        Title="SizeCropWindow" Height="300" Width="300" 
+        MouseLeftButtonDown="DownMouseLeftButton" 
+        WindowStyle="None" ResizeMode="NoResize" >
+    <Grid Background="Black" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                   Text="Input Size" FontSize="11.5"
+                   Foreground="White"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" 
+                   Margin="5" Text="X :" 
+                   TextAlignment="Right" 
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right" 
+                   Foreground="White" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" 
+                   Margin="5" Text="Y :" 
+                   TextAlignment="Right" 
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right" 
+                   Foreground="White" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" 
+                   Margin="5" Text="Width :" 
+                   TextAlignment="Right" 
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right" 
+                   Foreground="White" />
+
+        <TextBlock Grid.Row="4" Grid.Column="0" 
+                   Margin="5" Text="Height :" 
+                   TextAlignment="Right" 
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right" 
+                   Foreground="White" />
+
+        <TextBox Grid.Row="1" Grid.Column="1" 
+                 Margin="5" Text="{Binding StartX}" 
+                 VerticalAlignment="Center" />
+
+        <TextBox Grid.Row="2" Grid.Column="1" 
+                 Margin="5" Text="{Binding StartY}" 
+                 VerticalAlignment="Center" />
+
+        <TextBox Grid.Row="3" Grid.Column="1" 
+                 Margin="5" Text="{Binding SizeWidth}" 
+                 VerticalAlignment="Center" />
+
+        <TextBox Grid.Row="4" Grid.Column="1" 
+                 Margin="5" Text="{Binding SizeHeight}" 
+                 VerticalAlignment="Center" />
+
+        <Button Grid.Row="5" Grid.Column="0" 
+                Margin="5" Content="OK" 
+                Click="ClickOK" />
+
+        <Button Grid.Row="5" Grid.Column="1" 
+                Margin="5" Content="Cancel" 
+                Click="ClickCancel" />
+    </Grid>
+</Window>

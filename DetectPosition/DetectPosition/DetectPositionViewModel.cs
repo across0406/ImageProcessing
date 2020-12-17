@@ -16,7 +16,7 @@ using cv = OpenCvSharp;
 
 namespace DetectPosition
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class DetectPositionViewModel : INotifyPropertyChanged
     {
         #region INotifyPropertyChanged Implementation
 
@@ -906,7 +906,7 @@ namespace DetectPosition
 
         #region Constructors
 
-        public MainViewModel()
+        public DetectPositionViewModel()
         {
             SourceImage = new WriteableBitmap( 10, 10, 96, 96, PixelFormats.Bgr24, null );
             DestinationImage = new WriteableBitmap( 10, 10, 96, 96, PixelFormats.Bgr24, null );

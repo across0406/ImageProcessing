@@ -1,0 +1,57 @@
+﻿<Window x:Class="SurfaceProcessing.SurfaceProcessingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SurfaceProcessing" 
+        xmlns:scichart="clr-namespace:SciChartWrapper.Views;assembly=SciChartWrapper" 
+        xmlns:scichart3D="clr-namespace:SciChartWrapper;assembly=SciChartWrapper" 
+        xmlns:imageView="clr-namespace:Base.Controls.ImageViewer;assembly=Base"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="1080" Width="1920" 
+        Left="0" Top="0" >
+    <Grid Background="Black" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="75" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="150" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.Column="0" 
+                    Grid.ColumnSpan="2" 
+                    Orientation="Horizontal" >
+            <Button Content="Open Intensity" MinWidth="50" MinHeight="50" 
+                    Click="ClickOpenIntensity" Margin="5" />
+        </StackPanel>
+
+        <scichart3D:Surface Grid.Row="1" Grid.Column="0" 
+                            Grid.RowSpan="2" Grid.ColumnSpan="2" 
+                            Margin="5" x:Name="_surface3DViewer" />
+        <imageView:ImageView Grid.Row="1" Grid.Column="2" 
+                             Grid.RowSpan="2" Grid.ColumnSpan="2" 
+                             Margin="5" x:Name="_surface2DViewer" />
+
+        <scichart:SciChartProfile2DView Grid.Row="1" Grid.Column="4" 
+                                        Grid.ColumnSpan="2" 
+                                        Margin="5" x:Name="_profileX" />
+        <scichart:SciChartProfile2DView Grid.Row="2" Grid.Column="4" 
+                                        Grid.ColumnSpan="2" 
+                                        Margin="5" x:Name="_profileY" />
+
+        <StackPanel Grid.Row="1" Grid.Column="6" 
+                    Orientation="Vertical" >
+            <Button Content="Find Contours" MinWidth="50" MinHeight="50" 
+                    Click="ClickFindContours" Margin="5" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -35,7 +35,10 @@ using cv = OpenCvSharp;
 
 namespace SciChartWrapper
 {
-    public enum ECheckShape { None = 0, Line, Rect, Circle_2P, Circle_3P }
+    public enum ECheckShape
+    {
+        None = 0, Line, Rect, Circle_2P, Circle_3P
+    }
 
     public struct PositionInfo
     {
@@ -48,7 +51,7 @@ namespace SciChartWrapper
 
         public ECheckShape checkShape;
 
-        public PositionInfo(ECheckShape checkShape)
+        public PositionInfo( ECheckShape checkShape )
         {
             points = new List<Coords>();
             centerPoints = new Coords();
@@ -66,7 +69,7 @@ namespace SciChartWrapper
     {
         public float x, y, z;
 
-        public Coords(float x, float y, float z)
+        public Coords( float x, float y, float z )
         {
             this.x = x;
             this.y = y;
@@ -76,7 +79,10 @@ namespace SciChartWrapper
 
     public class PositionEventArgs : EventArgs
     {
-        public PositionInfo Data { get; set; }
+        public PositionInfo Data
+        {
+            get; set;
+        }
 
         public PositionEventArgs()
         {
@@ -91,19 +97,19 @@ namespace SciChartWrapper
 
     public class Vector3ComponentConverterEx : Vector3ComponentConverter
     {
-        public new object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public new object Convert( object value, Type targetType, object parameter, CultureInfo culture )
         {
             var seriesInfo = value as BaseXyzSeriesInfo3D;
 
-            if (seriesInfo == null)
+            if ( seriesInfo == null )
                 return null;
 
             var ds = seriesInfo.RenderableSeries.DataSeries as XyzDataSeries3D<double>;
 
             Vector3 convertedVector3 = new Vector3(
-                (float)ds.ZValues[(int)seriesInfo.VertexId - 1],
-                (float)ds.XValues[(int)seriesInfo.VertexId - 1],
-                (float)ds.YValues[(int)seriesInfo.VertexId - 1]);
+                (float)ds.ZValues[ (int)seriesInfo.VertexId - 1 ],
+                (float)ds.XValues[ (int)seriesInfo.VertexId - 1 ],
+                (float)ds.YValues[ (int)seriesInfo.VertexId - 1 ] );
 
             return convertedVector3;
         }
@@ -114,7 +120,7 @@ namespace SciChartWrapper
         public object _viewPage;
 
         public UniformGridDataSeries3D<double, double, double> _meshDataSeries;
-        
+
         public cv.Mat zMap;
         public int xSize;
         public float yMax;
@@ -139,18 +145,31 @@ namespace SciChartWrapper
 
         public UniformGridDataSeries3D<double, double, double> MeshDataSeries
         {
-            get { return _meshDataSeries; }
-            set { _meshDataSeries = value; OnPropertyChanged("MeshDataSeries"); }
+            get
+            {
+                return _meshDataSeries;
+            }
+            set
+            {
+                _meshDataSeries = value;
+                OnPropertyChanged( "MeshDataSeries" );
+            }
         }
 
         public bool CanAddSeries
         {
-            get { return sciChart.RenderableSeries.Count < MaxSeriesAmount; }
+            get
+            {
+                return sciChart.RenderableSeries.Count < MaxSeriesAmount;
+            }
         }
 
         public bool CanRemoveSeries
         {
-            get { return sciChart.RenderableSeries.Count > 0; }
+            get
+            {
+                return sciChart.RenderableSeries.Count > 0;
+            }
         }
 
         private IRange _xAxisRange;
@@ -159,39 +178,48 @@ namespace SciChartWrapper
 
         public IRange XAxisRange
         {
-            get { return _xAxisRange; }
+            get
+            {
+                return _xAxisRange;
+            }
             set
             {
-                if(_xAxisRange != value)
+                if ( _xAxisRange != value )
                 {
                     _xAxisRange = value;
-                    OnPropertyChanged("XAxisRange");
+                    OnPropertyChanged( "XAxisRange" );
                 }
             }
         }
 
         public IRange YAxisRange
         {
-            get { return _yAxisRange; }
+            get
+            {
+                return _yAxisRange;
+            }
             set
             {
-                if (_yAxisRange != value)
+                if ( _yAxisRange != value )
                 {
                     _yAxisRange = value;
-                    OnPropertyChanged("YAxisRange");
+                    OnPropertyChanged( "YAxisRange" );
                 }
             }
         }
 
         public IRange ZAxisRange
         {
-            get { return _zAxisRange; }
+            get
+            {
+                return _zAxisRange;
+            }
             set
             {
-                if (_zAxisRange != value)
+                if ( _zAxisRange != value )
                 {
                     _zAxisRange = value;
-                    OnPropertyChanged("ZAxisRange");
+                    OnPropertyChanged( "ZAxisRange" );
                 }
             }
         }
@@ -207,7 +235,7 @@ namespace SciChartWrapper
                   <SupportExpires>08/24/2019 00:00:00</SupportExpires>
                   <ProductCode>SC-WPF-SDK-ENTERPRISE-SRC</ProductCode>
                   <KeyCode>lwAAAAEAAACfOArucTvUAXUAQ3VzdG9tZXI9SFVNRU4gSU5DO09yZGVySWQ9QUJUMTgwODI0LTY1OTEtMTYxMDM7U3Vic2NyaXB0aW9uVmFsaWRUbz0yNC1BdWctMjAxOTtQcm9kdWN0Q29kZT1TQy1XUEYtU0RLLUVOVEVSUFJJU0UtU1JDAEhyOOgf4VGIFWsSYM3pcvwC/wDfDVvKNfvmtI3mSY77keeN/QvfDCWcLV/kuY8O</KeyCode>
-            </LicenseContract>");
+            </LicenseContract>" );
             //SciChartSurface.SetRuntimeLicenseKey(@"<LicenseContract>
             //<Customer>HUMEN INC</Customer>
             //<OrderId>ABT180824-6591-16103</OrderId>
@@ -222,10 +250,10 @@ namespace SciChartWrapper
 
             //XAx3D.TextFormatting = "#";
             //YAx3D.TextFormatting = "#";
-            YAx3D.GrowBy = new DoubleRange(0.1, 0.1);
+            YAx3D.GrowBy = new DoubleRange( 0.1, 0.1 );
             //ZAx3D.TextFormatting = "#";
 
-            scatterRenderableSeries.PointMarker = (BasePointMarker3D)Activator.CreateInstance((Type)(typeof(SpherePointMarker3D)));
+            scatterRenderableSeries.PointMarker = (BasePointMarker3D)Activator.CreateInstance( (Type)( typeof( SpherePointMarker3D ) ) );
             scatterRenderableSeries.PointMarker.Fill = Colors.Pink;
             scatterRenderableSeries.PointMarker.Size = 5.0f;
             scatterRenderableSeries.PointMarker.Opacity = 1.0f;
@@ -246,26 +274,27 @@ namespace SciChartWrapper
             uiRulerBtn.IsEnabled = false;
             uiSetBtn.IsEnabled = false;
 
-            XAxisRange = new DoubleRange(0, 2048);
-            YAxisRange = new DoubleRange(-50, 50);
-            ZAxisRange = new DoubleRange(0, 2048);
+            XAxisRange = new DoubleRange( 0, 2048 );
+            YAxisRange = new DoubleRange( -50, 50 );
+            ZAxisRange = new DoubleRange( 0, 2048 );
 
             this.DataContext = this;
         }
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged( string propertyName )
         {
             PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            if ( handler != null )
+                handler( this, new PropertyChangedEventArgs( propertyName ) );
         }
 
-        public void Init(int row, int col)
+        public void Init( int row, int col )
         {
             xSize = row;
             zSize = col;
             yMax = float.MinValue;
 
-            if (positionInfo == null)
+            if ( positionInfo == null )
             {
                 positionInfo = new List<PositionInfo>();
             }
@@ -274,7 +303,7 @@ namespace SciChartWrapper
                 positionInfo.Clear();
             }
 
-            if (drawInfo == null)
+            if ( drawInfo == null )
             {
                 drawInfo = new List<DrawGeometry>();
             }
@@ -283,16 +312,16 @@ namespace SciChartWrapper
                 drawInfo.Clear();
             }
 
-            if (MeshDataSeries == null)
+            if ( MeshDataSeries == null )
             {
-                MeshDataSeries = new UniformGridDataSeries3D<double, double, double>(xSize, zSize);
+                MeshDataSeries = new UniformGridDataSeries3D<double, double, double>( xSize, zSize );
             }
             else
             {
                 MeshDataSeries.Clear();
             }
-            
-            if (marker == null)
+
+            if ( marker == null )
             {
                 marker = new XyzDataSeries3D<double>();
                 marker.DataSeriesChanged += OnScatterSelected;
@@ -301,83 +330,83 @@ namespace SciChartWrapper
             {
                 marker.Clear();
             }
-            
+
             movePoint = false;
             annotIdx = -1; // 0 base            
             selectedIdx = -1;
         }
 
-        public void ApplyMinMaxCalc(float[] input)
+        public void ApplyMinMaxCalc( float[] input )
         {
             float zMin = input.Min();
             float zMax = input.Max();
 
-            Parallel.For(0, xSize - 1, x =>
-            {
-                for (int z = 0; z < zSize; z++)
-                {
-                    input[x * 2048 + zSize] -= zMin;
-                    input[x * 2048 + zSize] *= (zMax - zMin);
-                    MeshDataSeries[z, x] = input[x * 2048 + zSize];
-                }
-            });
+            Parallel.For( 0, xSize - 1, x =>
+             {
+                 for ( int z = 0; z < zSize; z++ )
+                 {
+                     input[ x * 2048 + zSize ] -= zMin;
+                     input[ x * 2048 + zSize ] *= ( zMax - zMin );
+                     MeshDataSeries[ z, x ] = input[ x * 2048 + zSize ];
+                 }
+             } );
         }
 
-        public void ApplyMinMaxCalc(cv.Mat input)
+        public void ApplyMinMaxCalc( cv.Mat input )
         {
             double zMax = double.MinValue;
             double zMin = double.MaxValue;
 
-            for (int x = 0; x < xSize; ++x)
+            for ( int x = 0; x < xSize; ++x )
             {
-                for (int z = 0; z < zSize; ++z)
+                for ( int z = 0; z < zSize; ++z )
                 {
-                    if (zMax < input.At<double>(x, z))
-                        zMax = input.At<double>(x, z);
-                                                  
-                    if (zMin > input.At<double>(x, z))
-                        zMin = input.At<double>(x, z);
+                    if ( zMax < input.At<double>( x, z ) )
+                        zMax = input.At<double>( x, z );
+
+                    if ( zMin > input.At<double>( x, z ) )
+                        zMin = input.At<double>( x, z );
                 }
             }
 
-            for (int x = 0; x < xSize; ++x)
+            for ( int x = 0; x < xSize; ++x )
             {
-                for (int z = 0; z < zSize; ++z)
+                for ( int z = 0; z < zSize; ++z )
                 {
-                    input.Set<float>(x, z, input.At<float>(x, z) - (float)zMin);
-                    input.Set<float>(x, z, input.At<float>(x, z) * 1000.0f / (float)(zMax - zMin));
-                    MeshDataSeries[z, x] = input.Get<float>(x, z);
+                    input.Set<float>( x, z, input.At<float>( x, z ) - (float)zMin );
+                    input.Set<float>( x, z, input.At<float>( x, z ) * 1000.0f / (float)( zMax - zMin ) );
+                    MeshDataSeries[ z, x ] = input.Get<float>( x, z );
                 }
             }
         }
 
-        public Coords ConvertCoordToVec(Coords coord)
+        public Coords ConvertCoordToVec( Coords coord )
         {
-            coord.x = (coord.x - xSize / 2) * 2 / xSize * sciChart.WorldDimensions.X / 2;
+            coord.x = ( coord.x - xSize / 2 ) * 2 / xSize * sciChart.WorldDimensions.X / 2;
             coord.y = coord.y / yMax * sciChart.WorldDimensions.Y;
-            coord.z = (coord.z - zSize / 2) * 2 / zSize * sciChart.WorldDimensions.Z / 2;
+            coord.z = ( coord.z - zSize / 2 ) * 2 / zSize * sciChart.WorldDimensions.Z / 2;
 
             return coord;
         }
 
-        public bool IsHitPointValid(HitTestInfo3D hitVertex)
+        public bool IsHitPointValid( HitTestInfo3D hitVertex )
         {
             return !hitVertex.IsEmpty() && hitVertex.IsHit;
         }
 
         public double GetLength()
         {
-            return Math.Sqrt(Math.Pow(positionInfo[annotIdx].points[1].x - positionInfo[annotIdx].points[0].x, 2) + Math.Pow(positionInfo[annotIdx].points[1].z - positionInfo[annotIdx].points[0].z, 2));
+            return Math.Sqrt( Math.Pow( positionInfo[ annotIdx ].points[ 1 ].x - positionInfo[ annotIdx ].points[ 0 ].x, 2 ) + Math.Pow( positionInfo[ annotIdx ].points[ 1 ].z - positionInfo[ annotIdx ].points[ 0 ].z, 2 ) );
         }
 
         public double GetWidth()
         {
-            return Math.Abs(positionInfo[annotIdx].points[1].x - positionInfo[annotIdx].points[0].x);
+            return Math.Abs( positionInfo[ annotIdx ].points[ 1 ].x - positionInfo[ annotIdx ].points[ 0 ].x );
         }
 
         public double GetHeight()
         {
-            return Math.Abs(positionInfo[annotIdx].points[1].z - positionInfo[annotIdx].points[0].z);
+            return Math.Abs( positionInfo[ annotIdx ].points[ 1 ].z - positionInfo[ annotIdx ].points[ 0 ].z );
         }
 
         public double GetRadius2P()
@@ -387,26 +416,26 @@ namespace SciChartWrapper
 
         public double[] GetRadiusCenter3P()
         {
-            int dataSize = positionInfo[annotIdx].points.Count;
+            int dataSize = positionInfo[ annotIdx ].points.Count;
             double a, b, r;
 
-            cv.Mat A = cv.Mat.Zeros(dataSize, 3, cv.MatType.CV_64FC1);
-            cv.Mat B = cv.Mat.Zeros(dataSize, 1, cv.MatType.CV_64FC1);
-            cv.Mat X = cv.Mat.Zeros(dataSize, 1, cv.MatType.CV_64FC1);
+            cv.Mat A = cv.Mat.Zeros( dataSize, 3, cv.MatType.CV_64FC1 );
+            cv.Mat B = cv.Mat.Zeros( dataSize, 1, cv.MatType.CV_64FC1 );
+            cv.Mat X = cv.Mat.Zeros( dataSize, 1, cv.MatType.CV_64FC1 );
 
-            for (int i = 0; i < dataSize; i++)
+            for ( int i = 0; i < dataSize; i++ )
             {
-                A.Set<double>(i, 0, positionInfo[annotIdx].points[i].x);
-                A.Set<double>(i, 1, positionInfo[annotIdx].points[i].z);
-                A.Set<double>(i, 2, 1);
-                B.Set<double>(i, -Math.Pow(positionInfo[annotIdx].points[i].x, 2) - Math.Pow(positionInfo[annotIdx].points[i].z, 2));
+                A.Set<double>( i, 0, positionInfo[ annotIdx ].points[ i ].x );
+                A.Set<double>( i, 1, positionInfo[ annotIdx ].points[ i ].z );
+                A.Set<double>( i, 2, 1 );
+                B.Set<double>( i, -Math.Pow( positionInfo[ annotIdx ].points[ i ].x, 2 ) - Math.Pow( positionInfo[ annotIdx ].points[ i ].z, 2 ) );
             }
 
-            cv.Cv2.Solve(A, B, X, cv.DecompTypes.SVD);
+            cv.Cv2.Solve( A, B, X, cv.DecompTypes.SVD );
 
-            a = -X.At<double>(0, 0) / 2;
-            b = -X.At<double>(1, 0) / 2;
-            r = Math.Sqrt(Math.Pow(a, 2) + Math.Pow(b, 2) - X.At<double>(2, 0));
+            a = -X.At<double>( 0, 0 ) / 2;
+            b = -X.At<double>( 1, 0 ) / 2;
+            r = Math.Sqrt( Math.Pow( a, 2 ) + Math.Pow( b, 2 ) - X.At<double>( 2, 0 ) );
 
             double[] data = { a, b, r };
 
@@ -415,32 +444,32 @@ namespace SciChartWrapper
 
         public void ClearPoints()
         {
-            if (positionInfo == null || drawInfo == null || marker == null)
+            if ( positionInfo == null || drawInfo == null || marker == null )
                 return;
 
             positionInfo.Clear();
-            for (int i = 0; i < drawInfo.Count; i++)
+            for ( int i = 0; i < drawInfo.Count; i++ )
             {
-                sciChart.Viewport3D.RootEntity.Children.Remove(drawInfo[i]);
+                sciChart.Viewport3D.RootEntity.Children.Remove( drawInfo[ i ] );
             }
             drawInfo.Clear();
             marker.Clear();
             scatterRenderableSeries.DataSeries = null;
             annotIdx = -1;
 
-            if (sciChart.RenderableSeries.Any())
+            if ( sciChart.RenderableSeries.Any() )
             {
                 var rSeries = sciChart.RenderableSeries.LastOrDefault();
 
-                if (rSeries == null || rSeries.DataSeries == null)
+                if ( rSeries == null || rSeries.DataSeries == null )
                     return;
 
                 //sciChart.RenderableSeries.Remove(rSeries);
 
                 MeshDataSeries.Clear();
 
-                OnPropertyChanged("CanAddSeries");
-                OnPropertyChanged("CanRemoveSeries");
+                OnPropertyChanged( "CanAddSeries" );
+                OnPropertyChanged( "CanRemoveSeries" );
 
                 //sciChart.ZoomExtents();
                 sciChart.ZoomExtentsX();
@@ -448,58 +477,58 @@ namespace SciChartWrapper
             }
         }
 
-        private void SurfaceMouseUp(object sender, MouseButtonEventArgs e)
+        private void SurfaceMouseUp( object sender, MouseButtonEventArgs e )
         {
-            if (positionInfo.Count < 1)
+            if ( positionInfo.Count < 1 )
             {
                 return;
             }
 
             // using SciChart.Charting3D.RenderableSeries
-            HitTestInfo3D hitVertex2 = backgroundSurfaceMesh.HitTest(e.GetPosition(sciChart));
-            HitTestInfo3D hitVertex = surfaceMeshRenderableSeries.HitTest(e.GetPosition(sciChart));
-            var xyzInfo2 = backgroundSurfaceMesh.ToSeriesInfo(hitVertex2);
-            var xyzInfo = surfaceMeshRenderableSeries.ToSeriesInfo(hitVertex);
+            HitTestInfo3D hitVertex2 = backgroundSurfaceMesh.HitTest( e.GetPosition( sciChart ) );
+            HitTestInfo3D hitVertex = surfaceMeshRenderableSeries.HitTest( e.GetPosition( sciChart ) );
+            var xyzInfo2 = backgroundSurfaceMesh.ToSeriesInfo( hitVertex2 );
+            var xyzInfo = surfaceMeshRenderableSeries.ToSeriesInfo( hitVertex );
 
 
 
-            if (IsHitPointValid(hitVertex) && !drawInfo.IsNullOrEmptyList())
+            if ( IsHitPointValid( hitVertex ) && !drawInfo.IsNullOrEmptyList() )
             {
-                if (movePoint && selectedIdx > -1)
+                if ( movePoint && selectedIdx > -1 )
                 {
                     int idx = sciChart.Viewport3D.RootEntity.Children.Count; // sciChart.Viewport3D.RootEntity.Children.Count?
 
-                    if (positionInfo[selectedIdx / 2].points[0].y > positionInfo[selectedIdx / 2].points[1].y)
+                    if ( positionInfo[ selectedIdx / 2 ].points[ 0 ].y > positionInfo[ selectedIdx / 2 ].points[ 1 ].y )
                     {
-                        marker.Update(selectedIdx, xyzInfo.HitVertex.X, positionInfo[selectedIdx / 2].points[0].y + 25, xyzInfo.HitVertex.Z);
+                        marker.Update( selectedIdx, xyzInfo.HitVertex.X, positionInfo[ selectedIdx / 2 ].points[ 0 ].y + 25, xyzInfo.HitVertex.Z );
                     }
                     else
                     {
-                        marker.Update(selectedIdx, xyzInfo.HitVertex.X, positionInfo[selectedIdx / 2].points[1].y + 25, xyzInfo.HitVertex.Z);
+                        marker.Update( selectedIdx, xyzInfo.HitVertex.X, positionInfo[ selectedIdx / 2 ].points[ 1 ].y + 25, xyzInfo.HitVertex.Z );
                     }
 
-                    Coords tt = positionInfo[selectedIdx / 2].points[selectedIdx % 2];
+                    Coords tt = positionInfo[ selectedIdx / 2 ].points[ selectedIdx % 2 ];
                     tt.x = xyzInfo.HitVertex.X;
                     tt.y = xyzInfo.HitVertex.Y;
                     tt.z = xyzInfo.HitVertex.Z;
 
-                    positionInfo[selectedIdx / 2].points[selectedIdx % 2] = tt;
-                    tt = ConvertCoordToVec(tt);
+                    positionInfo[ selectedIdx / 2 ].points[ selectedIdx % 2 ] = tt;
+                    tt = ConvertCoordToVec( tt );
 
-                    if (selectedIdx % 2 == 0)
+                    if ( selectedIdx % 2 == 0 )
                     {
-                        drawInfo[selectedIdx / 2].firstPos.X = tt.x;
-                        drawInfo[selectedIdx / 2].firstPos.Y = tt.y;
-                        drawInfo[selectedIdx / 2].firstPos.Z = tt.z;
+                        drawInfo[ selectedIdx / 2 ].firstPos.X = tt.x;
+                        drawInfo[ selectedIdx / 2 ].firstPos.Y = tt.y;
+                        drawInfo[ selectedIdx / 2 ].firstPos.Z = tt.z;
                     }
                     else
                     {
-                        drawInfo[selectedIdx / 2].secondPos.X = tt.x;
-                        drawInfo[selectedIdx / 2].secondPos.Y = tt.y;
-                        drawInfo[selectedIdx / 2].secondPos.Z = tt.z;
+                        drawInfo[ selectedIdx / 2 ].secondPos.X = tt.x;
+                        drawInfo[ selectedIdx / 2 ].secondPos.Y = tt.y;
+                        drawInfo[ selectedIdx / 2 ].secondPos.Z = tt.z;
                     }
 
-                    drawInfo[selectedIdx / 2].Update();
+                    drawInfo[ selectedIdx / 2 ].Update();
 
                     movePoint = false;
                     selectedIdx = -1;
@@ -521,94 +550,94 @@ namespace SciChartWrapper
             //    var tt = surfaceMeshRenderableSeries.ToSeriesInfo(hitVertex);
             //}
 
-            if (IsHitPointValid(hitVertex) && positionInfo[annotIdx].checkShape != ECheckShape.None)
+            if ( IsHitPointValid( hitVertex ) && positionInfo[ annotIdx ].checkShape != ECheckShape.None )
             {
-                PositionInfo temp = positionInfo[annotIdx];
+                PositionInfo temp = positionInfo[ annotIdx ];
 
-                temp.points.Add(new Coords(xyzInfo.HitVertex.X, xyzInfo.HitVertex.Y, xyzInfo.HitVertex.Z));
+                temp.points.Add( new Coords( xyzInfo.HitVertex.X, xyzInfo.HitVertex.Y, xyzInfo.HitVertex.Z ) );
 
                 // 마우스 따라가는 거 필요함                
 
-                if (temp.points.Count == 2 && temp.checkShape != ECheckShape.Circle_3P)
+                if ( temp.points.Count == 2 && temp.checkShape != ECheckShape.Circle_3P )
                 {
                     PositionEventArgs args = new PositionEventArgs();
 
-                    switch (temp.checkShape)
+                    switch ( temp.checkShape )
                     {
                         case ECheckShape.Line:
-                            Coords[] LineCoords = { temp.points[0], temp.points[1] };
+                            Coords[] LineCoords = { temp.points[ 0 ], temp.points[ 1 ] };
                             temp.length = GetLength();
-                            LineCoords[0] = ConvertCoordToVec(temp.points[0]);
-                            LineCoords[1] = ConvertCoordToVec(temp.points[1]);
-                            drawInfo.Add(new DrawGeometry(new Vector3(LineCoords[0].x, LineCoords[0].y, LineCoords[0].z), new Vector3(LineCoords[1].x, LineCoords[1].y, LineCoords[1].z), Color.FromArgb(128, 0, 0, 255), ECheckShape.Line));
-                            sciChart.Viewport3D.RootEntity.Children.Add(drawInfo[annotIdx]);
-                            AddMarker(temp);
+                            LineCoords[ 0 ] = ConvertCoordToVec( temp.points[ 0 ] );
+                            LineCoords[ 1 ] = ConvertCoordToVec( temp.points[ 1 ] );
+                            drawInfo.Add( new DrawGeometry( new Vector3( LineCoords[ 0 ].x, LineCoords[ 0 ].y, LineCoords[ 0 ].z ), new Vector3( LineCoords[ 1 ].x, LineCoords[ 1 ].y, LineCoords[ 1 ].z ), Color.FromArgb( 128, 0, 0, 255 ), ECheckShape.Line ) );
+                            sciChart.Viewport3D.RootEntity.Children.Add( drawInfo[ annotIdx ] );
+                            AddMarker( temp );
                             args.Data = temp;
-                            OnMeasureData(args);
+                            OnMeasureData( args );
                             break;
                         case ECheckShape.Rect:
-                            Coords[] rectCoords = { temp.points[0], temp.points[1] };
+                            Coords[] rectCoords = { temp.points[ 0 ], temp.points[ 1 ] };
                             temp.width = GetWidth();
                             temp.height = GetHeight();
-                            rectCoords[0] = ConvertCoordToVec(temp.points[0]);
-                            rectCoords[1] = ConvertCoordToVec(temp.points[1]);
-                            drawInfo.Add(new DrawGeometry(new Vector3(rectCoords[0].x, rectCoords[0].y, rectCoords[0].z), new Vector3(rectCoords[1].x, rectCoords[1].y, rectCoords[1].z), Color.FromArgb(128, 255, 0, 0), ECheckShape.Rect));
-                            sciChart.Viewport3D.RootEntity.Children.Add(drawInfo[annotIdx]);
-                            AddMarker(temp);
+                            rectCoords[ 0 ] = ConvertCoordToVec( temp.points[ 0 ] );
+                            rectCoords[ 1 ] = ConvertCoordToVec( temp.points[ 1 ] );
+                            drawInfo.Add( new DrawGeometry( new Vector3( rectCoords[ 0 ].x, rectCoords[ 0 ].y, rectCoords[ 0 ].z ), new Vector3( rectCoords[ 1 ].x, rectCoords[ 1 ].y, rectCoords[ 1 ].z ), Color.FromArgb( 128, 255, 0, 0 ), ECheckShape.Rect ) );
+                            sciChart.Viewport3D.RootEntity.Children.Add( drawInfo[ annotIdx ] );
+                            AddMarker( temp );
                             args.Data = temp;
-                            OnMeasureData(args);
+                            OnMeasureData( args );
                             break;
                         case ECheckShape.Circle_2P:
-                            Coords[] circleCoords = { temp.points[0], temp.points[1] };
+                            Coords[] circleCoords = { temp.points[ 0 ], temp.points[ 1 ] };
                             temp.radius = GetRadius2P();
-                            circleCoords[0] = ConvertCoordToVec(temp.points[0]);
-                            circleCoords[1] = ConvertCoordToVec(temp.points[1]);
-                            drawInfo.Add(new DrawGeometry(new Vector3(circleCoords[0].x, circleCoords[0].y, circleCoords[0].z), new Vector3(circleCoords[1].x, circleCoords[1].y, circleCoords[1].z), Color.FromArgb(255, 255, 0, 0), ECheckShape.Circle_2P));
-                            sciChart.Viewport3D.RootEntity.Children.Add(drawInfo[annotIdx]);
+                            circleCoords[ 0 ] = ConvertCoordToVec( temp.points[ 0 ] );
+                            circleCoords[ 1 ] = ConvertCoordToVec( temp.points[ 1 ] );
+                            drawInfo.Add( new DrawGeometry( new Vector3( circleCoords[ 0 ].x, circleCoords[ 0 ].y, circleCoords[ 0 ].z ), new Vector3( circleCoords[ 1 ].x, circleCoords[ 1 ].y, circleCoords[ 1 ].z ), Color.FromArgb( 255, 255, 0, 0 ), ECheckShape.Circle_2P ) );
+                            sciChart.Viewport3D.RootEntity.Children.Add( drawInfo[ annotIdx ] );
                             break;
                         default:
                             break;
                     }
                 }
-                else if (temp.points.Count == 3)
+                else if ( temp.points.Count == 3 )
                 {
                     double[] ret = GetRadiusCenter3P();
 
-                    temp.centerPoints.x = (float)ret[0];
+                    temp.centerPoints.x = (float)ret[ 0 ];
                     temp.centerPoints.y = xyzInfo.HitVertex.Y;
-                    temp.centerPoints.z = (float)ret[1];
-                    temp.radius = ret[2];
+                    temp.centerPoints.z = (float)ret[ 1 ];
+                    temp.radius = ret[ 2 ];
                 }
 
-                positionInfo[annotIdx] = temp;
+                positionInfo[ annotIdx ] = temp;
             }
         }
 
         public void AddLine()
         {
-            positionInfo.Add(new PositionInfo(ECheckShape.Line));
+            positionInfo.Add( new PositionInfo( ECheckShape.Line ) );
         }
 
         public void AddRect()
         {
-            positionInfo.Add(new PositionInfo(ECheckShape.Rect));
+            positionInfo.Add( new PositionInfo( ECheckShape.Rect ) );
         }
 
         public void AddCircle2P()
         {
-            positionInfo.Add(new PositionInfo(ECheckShape.Circle_2P));
+            positionInfo.Add( new PositionInfo( ECheckShape.Circle_2P ) );
         }
 
         public void AddCircle3P()
         {
-            positionInfo.Add(new PositionInfo(ECheckShape.Circle_3P));
+            positionInfo.Add( new PositionInfo( ECheckShape.Circle_3P ) );
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click( object sender, RoutedEventArgs e )
         {
-            String ButtonName = ((Button)sender).Name;
+            String ButtonName = ( (Button)sender ).Name;
 
-            switch (ButtonName)
+            switch ( ButtonName )
             {
                 case "LoadBtn":
                     LoadImage();
@@ -630,8 +659,8 @@ namespace SciChartWrapper
                     Clear();
                     break;
                 case "uiZoomInBtn":
-                    if(sciChart.Camera.OrthoHeight > _dH &&
-                       sciChart.Camera.OrthoWidth > _dW)
+                    if ( sciChart.Camera.OrthoHeight > _dH &&
+                       sciChart.Camera.OrthoWidth > _dW )
                     {
                         sciChart.Camera.OrthoHeight -= _dH;
                         sciChart.Camera.OrthoWidth -= _dW;
@@ -641,11 +670,11 @@ namespace SciChartWrapper
                         sciChart.Camera.OrthoHeight = 0.0f;
                         sciChart.Camera.OrthoWidth = 0.0f;
                     }
-                    
+
                     break;
                 case "uiZoomOutBtn":
-                    if(_maxHeight > sciChart.Camera.OrthoHeight + _dH &&
-                       _maxWidth > sciChart.Camera.OrthoWidth + _dW)
+                    if ( _maxHeight > sciChart.Camera.OrthoHeight + _dH &&
+                       _maxWidth > sciChart.Camera.OrthoWidth + _dW )
                     {
                         sciChart.Camera.OrthoHeight += _dH;
                         sciChart.Camera.OrthoWidth += _dW;
@@ -655,7 +684,7 @@ namespace SciChartWrapper
                         sciChart.Camera.OrthoHeight = _maxHeight;
                         sciChart.Camera.OrthoWidth = _maxWidth;
                     }
-                    
+
                     break;
                 case "uiZoomFitBtn":
                     sciChart.Camera.OrthoHeight = _maxHeight / 2;
@@ -680,7 +709,7 @@ namespace SciChartWrapper
                     break;
             }
 
-            if (ButtonName == "LoadBtn" || ButtonName == "ClearBtn")
+            if ( ButtonName == "LoadBtn" || ButtonName == "ClearBtn" )
             {
                 return;
             }
@@ -689,47 +718,47 @@ namespace SciChartWrapper
 
         }
 
-        public void SetData(float[] input, int row, int col)
+        public void SetData( float[] input, int row, int col )
         {
             //if (xSize != -1 || zSize != -1)
             //{
             //    surfaceMeshRenderableSeries.DataSeries.Clear();
             //}
 
-            Init(row, col);
+            Init( row, col );
 
             double min = 0.0f, max = 0.0f;
             min = input.Min();
             max = input.Max();
 
-            Parallel.For(0, xSize, x =>
-            {
-                for (int z = 0; z < zSize; ++z)
-                {
-                    input[x * row + z] = input[x * row + z] + (float)Math.Abs(min);
-                    input[x * row + z] = input[x * row + z] * 255.0f / (float)(max - min);
+            Parallel.For( 0, xSize, x =>
+             {
+                 for ( int z = 0; z < zSize; ++z )
+                 {
+                     input[ x * row + z ] = input[ x * row + z ] + (float)Math.Abs( min );
+                     input[ x * row + z ] = input[ x * row + z ] * 255.0f / (float)( max - min );
 
-                    if (yMax < input[x * row + z])
-                    {
-                        yMax = input[x * row + z];
-                    }
-                }
-            });
+                     if ( yMax < input[ x * row + z ] )
+                     {
+                         yMax = input[ x * row + z ];
+                     }
+                 }
+             } );
 
             // 값을 맞춘다...
 
-            Parallel.For(0, xSize, x =>
-            {            
-                for (int z = 0; z < zSize; ++z)
-                {
-                    MeshDataSeries[z, x] = input[x * row + z];
-            
-                    if (yMax < input[x * row + z])
-                    {
-                        yMax = input[x * row + z];
-                    }
-                }
-            });
+            Parallel.For( 0, xSize, x =>
+             {
+                 for ( int z = 0; z < zSize; ++z )
+                 {
+                     MeshDataSeries[ z, x ] = input[ x * row + z ];
+
+                     if ( yMax < input[ x * row + z ] )
+                     {
+                         yMax = input[ x * row + z ];
+                     }
+                 }
+             } );
 
 
             min = input.Min();
@@ -738,9 +767,9 @@ namespace SciChartWrapper
             surfaceMeshRenderableSeries.Maximum = max;
             surfaceMeshRenderableSeries.Minimum = min;
 
-            if (YAx3D.VisibleRange != null)
+            if ( YAx3D.VisibleRange != null )
             {
-                if (min > (double)YAx3D.VisibleRange.Max)
+                if ( min > (double)YAx3D.VisibleRange.Max )
                 {
                     YAx3D.VisibleRange.Max = max;
                     YAx3D.VisibleRange.Min = min;
@@ -753,51 +782,84 @@ namespace SciChartWrapper
             }
         }
 
-        public void SetData(cv.Mat input)
+        public void SetData( cv.Mat input )
         {
             //if (xSize != -1 || zSize != -1)
             //{
             //    surfaceMeshRenderableSeries.DataSeries.Clear();
             //}
-            
-            zMap = new cv.Mat(new cv.Size(input.Width, input.Height), cv.MatType.CV_32FC1);
-            input.ConvertTo(zMap, cv.MatType.CV_32FC1);
-			//Init(zMap.Rows, zMap.Cols);
-            Init(zMap.Rows, zMap.Cols);
-            
-            Parallel.For(0, xSize, x =>
-            {
-                for (int z = 0; z < zSize; ++z)
-                {
-                    MeshDataSeries[z, x] = zMap.At<float>(x, z);
-                    
-                    if (yMax < zMap.Get<float>(x, z))
-                    {
-                        yMax = zMap.Get<float>(x, z);
-                    }
-                }
-            });
+
+            zMap = new cv.Mat( new cv.Size( input.Width, input.Height ), cv.MatType.CV_32FC1 );
+            input.ConvertTo( zMap, cv.MatType.CV_32FC1 );
+            //Init(zMap.Rows, zMap.Cols);
+            Init( zMap.Rows, zMap.Cols );
+
+            Parallel.For( 0, xSize, x =>
+             {
+                 for ( int z = 0; z < zSize; ++z )
+                 {
+                     MeshDataSeries[ z, x ] = zMap.At<float>( x, z );
+
+                     if ( yMax < zMap.Get<float>( x, z ) )
+                     {
+                         yMax = zMap.Get<float>( x, z );
+                     }
+                 }
+             } );
 
             double min = 0.0f, max = 0.0f;
-            zMap.MinMaxLoc(out min, out max);
+            zMap.MinMaxLoc( out min, out max );
             surfaceMeshRenderableSeries.Maximum = max;
             surfaceMeshRenderableSeries.Minimum = min;
             //backgroundSurfaceMesh.IsVisible = false;
         }
 
-        public void AddMarker(PositionInfo position)
+        public void SetData( cv.Mat input, float minValue )
         {
-            if (position.checkShape == ECheckShape.Line)
+            //if (xSize != -1 || zSize != -1)
+            //{
+            //    surfaceMeshRenderableSeries.DataSeries.Clear();
+            //}
+
+            zMap = new cv.Mat( new cv.Size( input.Width, input.Height ), cv.MatType.CV_32FC1 );
+            input.ConvertTo( zMap, cv.MatType.CV_32FC1 );
+            //Init(zMap.Rows, zMap.Cols);
+            Init( zMap.Rows, zMap.Cols );
+
+            Parallel.For( 0, xSize, x =>
             {
-                marker.Append(position.points[0].x, position.points[0].y + 25, position.points[0].z, new PointMetadata3D(Colors.Pink, 1.0f));
-                marker.Append(position.points[1].x, position.points[1].y + 25, position.points[1].z, new PointMetadata3D(Colors.Pink, 1.0f));
+                for ( int z = 0; z < zSize; ++z )
+                {
+                    MeshDataSeries[ z, x ] = zMap.At<float>( x, z );
+
+                    if ( yMax < zMap.Get<float>( x, z ) )
+                    {
+                        yMax = zMap.Get<float>( x, z );
+                    }
+                }
+            } );
+
+            double min = 0.0f, max = 0.0f;
+            zMap.MinMaxLoc( out min, out max );
+            min = minValue;
+            surfaceMeshRenderableSeries.Maximum = max;
+            surfaceMeshRenderableSeries.Minimum = min;
+            //backgroundSurfaceMesh.IsVisible = false;
+        }
+
+        public void AddMarker( PositionInfo position )
+        {
+            if ( position.checkShape == ECheckShape.Line )
+            {
+                marker.Append( position.points[ 0 ].x, position.points[ 0 ].y + 25, position.points[ 0 ].z, new PointMetadata3D( Colors.Pink, 1.0f ) );
+                marker.Append( position.points[ 1 ].x, position.points[ 1 ].y + 25, position.points[ 1 ].z, new PointMetadata3D( Colors.Pink, 1.0f ) );
             }
-            else if (position.checkShape == ECheckShape.Rect)
+            else if ( position.checkShape == ECheckShape.Rect )
             {
-                marker.Append(position.points[0].x, position.points[0].y + 25, position.points[0].z, new PointMetadata3D(Colors.Pink, 1.0f));
-                marker.Append(position.points[1].x, position.points[0].y + 25, position.points[0].z, new PointMetadata3D(Colors.Pink, 1.0f));
-                marker.Append(position.points[1].x, position.points[1].y + 25, position.points[1].z, new PointMetadata3D(Colors.Pink, 1.0f));
-                marker.Append(position.points[0].x, position.points[1].y + 25, position.points[1].z, new PointMetadata3D(Colors.Pink, 1.0f));
+                marker.Append( position.points[ 0 ].x, position.points[ 0 ].y + 25, position.points[ 0 ].z, new PointMetadata3D( Colors.Pink, 1.0f ) );
+                marker.Append( position.points[ 1 ].x, position.points[ 0 ].y + 25, position.points[ 0 ].z, new PointMetadata3D( Colors.Pink, 1.0f ) );
+                marker.Append( position.points[ 1 ].x, position.points[ 1 ].y + 25, position.points[ 1 ].z, new PointMetadata3D( Colors.Pink, 1.0f ) );
+                marker.Append( position.points[ 0 ].x, position.points[ 1 ].y + 25, position.points[ 1 ].z, new PointMetadata3D( Colors.Pink, 1.0f ) );
             }
 
             scatterRenderableSeries.DataSeries = marker;
@@ -809,27 +871,27 @@ namespace SciChartWrapper
             dlg.Filter = "bmp Images (*.bmp)|*.bmp|All Files (*.*)|*.*";
             Nullable<bool> result = dlg.ShowDialog();
 
-            if (result == true)
+            if ( result == true )
             {
-                cv.Mat img = new cv.Mat(dlg.FileName, cv.ImreadModes.Grayscale);
-                SetData(img);
+                cv.Mat img = new cv.Mat( dlg.FileName, cv.ImreadModes.Grayscale );
+                SetData( img );
             }
         }
 
-        protected virtual void OnMeasureData(PositionEventArgs e)
+        protected virtual void OnMeasureData( PositionEventArgs e )
         {
             EventHandler<PositionEventArgs> handler = PositionEvent;
-            if (handler != null)
+            if ( handler != null )
             {
-                handler(this, e);
+                handler( this, e );
             }
         }
 
-        private void OnScatterSelected(object sender, DataSeriesChangedEventArgs e)
+        private void OnScatterSelected( object sender, DataSeriesChangedEventArgs e )
         {
-            for (int i = 0; i < marker.Count; i++)
+            for ( int i = 0; i < marker.Count; i++ )
             {
-                if (marker.WValues[i] != null && marker.WValues[i].IsSelected)
+                if ( marker.WValues[ i ] != null && marker.WValues[ i ].IsSelected )
                 {
                     selectedIdx = i;
                     movePoint = true;
@@ -838,23 +900,23 @@ namespace SciChartWrapper
             }
         }
 
-        private void Clear()
+        public void Clear()
         {
-            if (sciChart.RenderableSeries == null)
+            if ( sciChart.RenderableSeries == null )
                 return;
 
-            if(sciChart.RenderableSeries.Any())
+            if ( sciChart.RenderableSeries.Any() )
             {
                 var rSeries = sciChart.RenderableSeries.LastOrDefault();
 
-                if (rSeries == null || rSeries.DataSeries == null)
+                if ( rSeries == null || rSeries.DataSeries == null )
                     return;
 
                 MeshDataSeries.Clear();
-                //sciChart.RenderableSeries.Remove(rSeries);
+                sciChart.RenderableSeries.Remove( rSeries );
 
-                OnPropertyChanged("CanAddSeries");
-                OnPropertyChanged("CanRemoveSeries");
+                OnPropertyChanged( "CanAddSeries" );
+                OnPropertyChanged( "CanRemoveSeries" );
 
                 sciChart.ZoomExtents();
             }

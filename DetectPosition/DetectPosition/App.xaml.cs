@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SurfaceProcessing;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +14,14 @@ namespace DetectPosition
     /// </summary>
     public partial class App : Application
     {
+        private void StartupApplication( object sender, StartupEventArgs e )
+        {
+            Window viewWindow = null;
+
+            //viewWindow = new DetectPositionView();
+            viewWindow = new SurfaceProcessingView();
+
+            viewWindow.Show();
+        }
     }
 }
