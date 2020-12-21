@@ -333,9 +333,13 @@ namespace SurfaceProcessing
                     {
                         subtractedIndexer[ i, j ] = surfaceIndexer[ i, j + 1 ] - surfaceIndexer[ i, j ];
 
-                        if ( subtractedIndexer[ i, j ] > (float)Math.PI )
+                        if ( subtractedIndexer[ i, j ] > 4.0 )
                         {
                             subtractedIndexer[ i, j ] = subtractedIndexer[ i, j ] - (float)( 2.0f * Math.PI );
+                        }
+                        else if ( subtractedIndexer[ i, j ] < 2.0 )
+                        {
+                            subtractedIndexer[ i, j ] = subtractedIndexer[ i, j ] + (float)( 2.0f * Math.PI );
                         }
                     }
                 }
@@ -719,12 +723,55 @@ namespace SurfaceProcessing
                 }
             );
 
+            float[] plusSummation = new float[ subData.Rows ];
+            float[] minusSummation = new float[ subData.Rows ];
+
+            Parallel.For(
+                0, subData.Rows, i =>
+                {
+                    minusSummation[ i ] = 0.0f;
+                    plusSummation[ i ] = 0.0f;
+                }
+            );
+
+            Parallel.For(
+                0, subData.Rows, i =>
+                {
+                    for ( int j = 0; j < subData.Cols; ++j )
+                    {
+                        double distance = cv.Cv2.PointPolygonTest( contour, new cv.Point2f( i + compensatedX, j + compensatedY ), false );
+
+                        lock ( lockObject )
+                        {
+                            if ( distance < 0.0 )
+                            {
+                                
+                            }
+                            else
+                            {
+                                if ( subDataIndexer[ i, j ] >= surfaceAverage )
+                                {
+                                    plusSummation[ i ] += subDataIndexer[ i, j ];
+                                }
+                                else
+                                {
+                                    minusSummation[ i ] += subDataIndexer[ i, j ];
+                                }
+                            }
+                        }
+                    }
+                }
+            );
+
             if ( type.Equals( "Intensity" ) )
             {
                 heightMin *= 0.344f;
                 heightMax *= 0.344f;
                 heightAverage *= 0.344f;
             }
+
+            upperArea = plusSummation.Sum();
+            lowerArea = minusSummation.Sum();
 
             using ( StreamWriter file = new StreamWriter( fullPath, true ) )
             {
